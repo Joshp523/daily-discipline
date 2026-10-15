@@ -13,7 +13,7 @@ h1,.hdr,nav button,.chip,.card>b:first-child,.card>.row:first-child>b{font-famil
 h1{font-size:26px;margin:6px 0 2px;text-transform:uppercase;letter-spacing:.09em;font-weight:700}
 .sub{color:var(--mu);font-size:13px;margin-bottom:14px}
 .hdr{display:flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding-bottom:10px;border-bottom:1px solid var(--ln);margin-bottom:10px}.hdr span:last-child{margin-left:auto;color:var(--mu)}.hdr svg{width:34px;height:18px;border-radius:2px}
-.hero{position:relative;height:124px;border-radius:12px;overflow:hidden;margin:4px 0 14px;border:1px solid var(--ln)}.hero svg{position:absolute;inset:0;width:100%;height:100%;opacity:.85}
+.hero{position:relative;height:150px;border-radius:12px;overflow:hidden;margin:4px 0 14px;border:1px solid var(--ln);background:#0d1424 center/cover no-repeat}
 .hero .ov{position:absolute;inset:0;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(0deg,#06090ff0,#06090f22 75%)}
 .hero .k{font:700 11px "Roboto Mono",monospace;letter-spacing:.16em;color:#ffb3bd}.hero .t{font:700 28px "Roboto Condensed",sans-serif;letter-spacing:.1em;text-transform:uppercase}
 .card{background:var(--card);border:1px solid var(--ln);border-left:3px solid var(--red);border-radius:12px;padding:14px;margin-bottom:12px}
@@ -54,6 +54,7 @@ function flag(){let st='';for(let r=0;r<9;r++){const n=r%2?5:6;for(let k=0;k<n;k
  return`<svg viewBox="0 0 190 100" preserveAspectRatio="xMidYMid slice">${b}<rect width="76" height="53.85" fill="var(--flagB)"/>${st}</svg>`}
 const dayN=()=>Math.min(54,Math.max(1,Math.round((new Date(today)-new Date('2026-10-05'))/864e5)+1));
 const hdr=()=>`<div class="hdr">${flag()}<span>Daily Discipline</span><span>Day ${dayN()}/54 <i class="dot sdot" style="background:${SYC[SY]};margin:0 0 0 6px"></i></span></div>`;
+const hero=(img,pos,t,k)=>`<div class="hero" style="background-image:url(${img});background-position:${pos}"><div class="ov"><div class="k">${k||'DAY '+dayN()+' OF 54'}</div><div class="t">${t}</div></div></div>`;
 const CATS=[['Unavoidable Expenses','var(--ac)'],['Optional Stuff','#c9d1e3'],['Absolutely Frivolous Fun Stuff','#e0364f']];
 const iso=d=>{const z=new Date(d);return z.getFullYear()+'-'+String(z.getMonth()+1).padStart(2,'0')+'-'+String(z.getDate()).padStart(2,'0')};
 const today=iso(new Date());const money=n=>'$'+n.toFixed(2);const pc=n=>Math.round(n*100)+'%';
@@ -86,7 +87,7 @@ function spend(){
  const caps=S.caps||[0,90,40],exp=S.budget*(new Date().getDay()+1)/7,pace=tot<=exp?'On pace · '+money(exp-tot)+' of slack today':money(tot-exp)+' ahead of pace';const cn={};S.spend.forEach(x=>{const k=x.t.toLowerCase();cn[k]=(cn[k]||0)+1});const top=Object.keys(cn).filter(t=>!/['"]/.test(t)).sort((a,b)=>cn[b]-cn[a]).slice(0,5).map(t=>`<button class="chip" onclick="document.getElementById('t').value='${esc(t)}';sugCat('${esc(t)}')">${esc(t)}</button>`).join('');
  const cats=CATS.map(([n,c],i)=>{const v=wk.filter(x=>x.c===n).reduce((s,x)=>s+x.a,0),cp=caps[i];return`<div class="item"><div class="row"><span><i class="dot" style="background:${c}"></i>${sn(n)}</span><span><b>${money(v)}</b>${i?` / <input class="kg" type="number" value="${cp}" onchange="S.caps=S.caps||[0,90,40];S.caps[${i}]=+this.value;save();render()">`:''}</span></div>${i?`<div class="bar ${v>cp?'over':''}" style="height:6px;margin:6px 0 0"><i style="width:${Math.min(100,v/cp*100)}%"></i></div>`:''}</div>`}).join('');
  const rec=[...S.spend].sort((x,y)=>y.d.localeCompare(x.d)).slice(0,15).map(x=>`<div class="item row"><span><b>${esc(x.t)}</b><br><span class="mu">${x.d} · ${sn(x.c)}</span></span><span>${money(x.a)}<button class="x" onclick="del('spend','${x.id}')">×</button></span></div>`).join('');
- return`<h1>Spending</h1><div class="sub">Week ${a} – ${b} · Sun–Sat</div>
+ return`${hero('hero-spend.jpg','50% 15%','Spending')}<div class="sub">Week ${a} – ${b} · Sun–Sat</div>
  <div class="card"><div class="mu">This week</div><div class="big">${money(tot)}</div><div class="bar ${rem<0?'over':''}"><i style="width:${Math.min(100,tot/S.budget*100)}%"></i></div><div class="row mu"><span>${rem>=0?money(rem)+' left':money(-rem)+' over'}</span><span>of ${money(S.budget)}</span></div><div class="mu">${pace}</div></div>
  <div class="card row"><div><div class="mu">Balance</div><div class="big">${money(S.start-all)}</div></div><div style="text-align:right"><div class="mu">Frivolous ratio</div><div class="big">${all?pc(fr/all):'0%'}</div></div></div>
  <div class="card"><b>Weekly category caps</b>${cats}</div>
@@ -106,7 +107,7 @@ function food(){
  const m=(l,f,sf)=>{const x=e[f+'x'];return`<div class="item"><div class="row"><span class="mu">${l}</span><span><button class="chip ${x?'on':''}" onclick="setV('food','${f}x',${!x})">${x?'✓ Skipped':'Skip'}</button>${x?'':` <input type="time" class="kg" style="width:112px!important" value="${esc(e[f+'t'])}" onchange="setV('food','${f}t',this.value)">`}</span></div>${x?'<div class="mu">Skipped — not counted in satiety or fast timing</div>':`<input placeholder="What did you eat?" value="${esc(e[f])}" onchange="setV('food','${f}',this.value)" style="margin:4px 0"><select onchange="setV('food','${sf}',this.value)"><option value="">Satiety…</option>${SAT.map(y=>`<option ${e[sf]===y?'selected':''}>${y}</option>`).join('')}</select>`}</div>`};
  const D=days7();const hrs=D.map(d=>(S.food[d]||{}).fh||0);
  const past=E.reverse().filter(([d])=>d!==today).slice(0,6).map(([d,x])=>`<div class="item"><div class="row"><b>${d}</b><span class="mu">${x.fh}h fast · ${x.sn===true?'snacked':x.sn===false?'no snacks':'–'}</span></div><div class="mu">${[x.b,x.l,x.d].filter(Boolean).map(esc).join(' · ')}</div></div>`).join('');
- return`<h1>Food</h1><div class="sub">Deficit & satiety sprint · Oct 9 – Dec 1 · 16:8 goal</div>
+ return`${hero('hero-food.jpg','50% 20%','Food')}<div class="sub">Deficit & satiety sprint · Oct 9 – Dec 1 · 16:8 goal</div>
  <div class="card"><div class="mu">Deficit habit score (target 80%)</div><div class="big">${pc(score)}</div><div class="bar"><i style="width:${score*100}%"></i></div>
  <div class="f mu" style="margin-top:8px"><span>Fasting goal met: <b>${pc(fast/n)}</b></span><span>Snack-free days: <b>${snf}</b></span><span>Avg fast: <b>${avg.toFixed(1)}h</b></span><span>Optimal satiety: <b>${pc(sat)}</b></span></div></div>
  <div class="card"><b>Fasting hours, last 7 days</b><div class="mu">Goal 16h</div>${chart(hrs,16,v=>v>=16,16)}</div><div class="card"><b>Bodyweight trend (lbs)</b><div class="mu">Is the deficit working?</div>${spark(Object.keys(S.fx).sort().filter(d=>S.fx[d].bw).map(d=>S.fx[d].bw),v=>v)}</div>
@@ -144,7 +145,7 @@ function faith(){
  const mins=[['pers','Personal study (min)'],['comp','Companion study (min)'],['lang','Language (min)'],['gtr','Guitar (min)'],['up','Uplifting media (min)'],['dis','Distracting media (min)']].map(([f,l])=>`<div><div class="mu">${l}</div>${num('faith',f,'0')}</div>`).join('');
  const bars=H.map(h=>{const l=logged(h);return`<div class="item"><div class="row"><span>${h[1]}</span><span class="mu">${l}/${el}</span></div><div class="bar" style="margin:6px 0 0;height:6px"><i style="width:${Math.min(100,l/el*100)}%"></i></div></div>`}).join('');
  const D=days7();
- return`<h1>Faith & Discipleship</h1><div class="sub">“Arise early, that your bodies and your minds may be invigorated.” — D&C 88:124</div>
+ return`${hero('hero-faith.jpg','50% 8%','Faith &amp; Discipleship')}<div class="sub">“Arise early, that your bodies and your minds may be invigorated.” — D&C 88:124</div>
  <div class="card"><div class="mu">Today</div><div class="big">${pc(dayPct(e))}</div><div class="bar"><i style="width:${dayPct(e)*100}%"></i></div>${chart(D.map(d=>dayPct(F[d])),1,v=>v>=.8,.8)}<div class="mu" style="margin-top:6px">Goal ≥80% · core habits (rise, study, family prayer) count double</div></div>
  <div class="card"><b>Check off today</b><div class="chips">${chips}</div><div class="f" style="margin-top:12px">${mins}</div><input placeholder="Media topics / notes" value="${esc(e.n)}" onchange="setV('faith','n',this.value)" style="margin-top:8px"></div>
  <div class="card"><b>54-day challenge</b><div class="f mu" style="margin-top:8px"><span>Since start <b>${(adh*100).toFixed(0)}%</b></span><span>Full 54 days <b>${(adhF*100).toFixed(0)}%</b></span><span>Scripture <b>${((sum('pers')+sum('comp'))/60).toFixed(1)}h</b></span><span>Skills <b>${((sum('lang')+sum('gtr'))/60).toFixed(1)}h</b></span><span>Distracting <b>${(sum('dis')/60).toFixed(1)}h</b></span></div></div>
@@ -159,10 +160,13 @@ function toast(m){let t=document.getElementById('toast');if(!t){t=document.creat
 S.fd=today;S.tab='today';S.caps=S.caps||[0,90,40];
 const tg=t=>{const m=/^(\d+)x(\d+)?/.exec(t||'');return{n:m?+m[1]:3,r:m&&m[2]?+m[2]:0}};
 function fmig(){Object.values(S.fx).forEach(x=>(x.ex||[]).forEach(e=>{if(!e.s){const g=tg(e.t);e.s=Array(g.n).fill(e.r?(g.r||1):null);delete e.r}}))}fmig();
-const FX=()=>(S.fx[S.fd]=S.fx[S.fd]||{type:'weights',split:'Upper body',ex:[]});
+const SPLITS=['Push','Pull','Legs'];
+const FX=()=>(S.fx[S.fd]=S.fx[S.fd]||{type:'weights',split:'Push',ex:[]});
 const fset=(f,v)=>{FX()[f]=v;save();render()};
-const ps=p=>p&&p.includes(':')?(+p.split(':')[0])*60+(+p.split(':')[1]):0;
-const pf=n=>Math.floor(n/60)+':'+String(Math.round(n%60)).padStart(2,'0');
+/* pace helpers: accept 8:35, 8.35 or 8,35 */
+const ps=p=>{const m=/^\s*(\d+)\s*[:.,]\s*(\d{1,2})\s*$/.exec(String(p==null?'':p));return m?(+m[1])*60+(+m[2]):0};
+const np=p=>{const s=ps(p);return s?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):String(p||'').trim()};
+const pf=n=>{n=Math.round(n);return Math.floor(n/60)+':'+String(n%60).padStart(2,'0')};
 const lk=n=>n.toLowerCase().replace('triceps','tricep').replace('benchpress','bench press');
 const sdone=e=>e.s.filter(v=>v!=null).length;
 const wdone=f=>f.type==='weights'&&(f.ex||[]).some(sdone);const fdone=f=>wdone(f)||(f.type==='run'&&f.mi>0);
@@ -179,20 +183,21 @@ function cue(e,d){const h=Object.keys(S.fx).filter(x=>x<d&&wdone(S.fx[x])).sort(
 function spark(v,u){if(v.length<2)return'<div class="mu">Need 2+ entries for a trend.</div>';const mn=Math.min(...v),mx=Math.max(...v),r=(mx-mn)||1;const pts=v.map((y,i)=>(i/(v.length-1)*290+5)+','+(50-(y-mn)/r*44)).join(' ');
  return`<svg viewBox="0 0 300 58" style="width:100%;height:70px"><polyline points="${pts}" fill="none" stroke="var(--ac)" stroke-width="2.5" stroke-linejoin="round"/></svg><div class="row mu"><span>${u(v[0])}</span><span>${u(v[v.length-1])}</span></div>`}
 function fit(){
- const d0=S.fd,f=S.fx[d0]||{type:'weights',split:'Upper body',ex:[]},D=Object.keys(S.fx).sort(),[wa,wb]=weekRange();
+ const d0=S.fd,f=S.fx[d0]||{type:'weights',split:'Push',ex:[]},D=Object.keys(S.fx).sort(),[wa,wb]=weekRange();
  const wk=D.filter(d=>d>=wa&&d<=wb&&fdone(S.fx[d])),miles=wk.reduce((s,d)=>s+(S.fx[d].mi||0),0);
- const bw=D.filter(d=>S.fx[d].bw).map(d=>S.fx[d].bw),runs=D.filter(d=>S.fx[d].type==='run'&&S.fx[d].pace);
+ const bw=D.filter(d=>S.fx[d].bw).map(d=>S.fx[d].bw),runs=D.filter(d=>S.fx[d].type==='run'&&ps(S.fx[d].pace)>0);
  const L={};D.filter(d=>wdone(S.fx[d])).forEach(d=>S.fx[d].ex.filter(e=>sdone(e)&&e.kg>0).forEach(e=>(L[lk(e.n)]=L[lk(e.n)]||[]).push(e.kg)));
  const lifts=Object.entries(L).map(([n,a])=>`<div class="item row"><span>${esc(n)}</span><span><b>${Math.max(...a)} kg</b> <span class="mu">${a[0]<Math.max(...a)?'↑ from '+a[0]:'· '+a.length+'×'}</span></span></div>`).join('');
  const t=f.type,ex=f.ex||[],tot=ex.reduce((s,e)=>s+e.s.length,0),dn=ex.reduce((s,e)=>s+sdone(e),0);
+ const splits=SPLITS.concat(f.split&&!SPLITS.includes(f.split)?[f.split]:[]);
  const strip=Array.from({length:8},(_,i)=>{const d=new Date(d0+'T12:00');d.setDate(d.getDate()+i-1);const k=iso(d),x=S.fx[k];return`<button class="chip ${k===d0?'on':''}" onclick="S.fd='${k}';render()">${dl(k)} ${k.slice(8)}<br>${x?{weights:ICON.fit,run:ICON.run,rest:ICON.rest}[x.type]+(fdone(x)?'✓':''):'·'}</button>`}).join('');
- const body=t==='weights'?`<div class="f" style="margin:10px 0"><select onchange="fset('split',this.value)">${['Upper body','Legs'].map(x=>`<option ${f.split===x?'selected':''}>${x}</option>`).join('')}</select><button class="chip" onclick="copyLast()">Plan from last ${esc(f.split||'')}</button></div>${d0===today?'<div class="mu" id="rt"></div>':''}`+
+ const body=t==='weights'?`<div class="f" style="margin:10px 0"><select onchange="fset('split',this.value)">${splits.map(x=>`<option ${f.split===x?'selected':''}>${esc(x)}</option>`).join('')}</select><button class="chip" onclick="copyLast()">Plan from last ${esc(f.split||'')}</button></div>${d0===today?'<div class="mu" id="rt"></div>':''}`+
   (tot?`<div class="bar" style="height:6px"><i style="width:${dn/tot*100}%"></i></div><div class="mu">${dn}/${tot} sets</div>`:'')+
   ex.map((e,i)=>{const g=tg(e.t);return`<div class="item"><div class="row"><b>${esc(e.n)}</b><span><input class="kg" type="number" inputmode="decimal" value="${e.kg}" onchange="exKg(${i},this.value)"> kg <button class="x" onclick="exDel(${i})">×</button></span></div><div class="row mu"><span>Goal${cue(e,d0)}</span><input class="kg" value="${esc(e.t)}" onchange="exGoal(${i},this.value)"></div><div class="sets">${e.s.map((v,j)=>`<button class="chip set ${v!=null?'on':''}" onclick="setTap(${i},${j})">${v!=null?v:(g.r||'–')}</button>`).join('')}</div></div>`}).join('')+
   `<div class="f" style="margin-top:10px"><input id="en" class="w" placeholder="Add exercise"><input id="ek" type="number" inputmode="decimal" placeholder="kg"><input id="et" placeholder="Goal 3x10"></div><button class="go" onclick="exAdd()">Add exercise</button>`
- :t==='run'?`<div class="f" style="margin-top:10px"><div><div class="mu">Goal (mi)</div><input type="number" step="0.1" value="${f.tgt||''}" onchange="fset('tgt',+this.value)"></div><div><div class="mu">Distance (mi)</div><input type="number" step="0.01" value="${f.mi||''}" onchange="fset('mi',+this.value);toast('Run logged ★')"></div><div class="w"><div class="mu">Pace (min/mile, e.g. 8:35)</div><input value="${esc(f.pace)}" onchange="fset('pace',this.value)"></div></div>`:'<div class="mu" style="margin-top:10px">Rest day. Recovery counts.</div>';
+ :t==='run'?`<div class="f" style="margin-top:10px"><div><div class="mu">Goal (mi)</div><input type="number" step="0.1" value="${f.tgt||''}" onchange="fset('tgt',+this.value)"></div><div><div class="mu">Distance (mi)</div><input type="number" step="0.01" value="${f.mi||''}" onchange="fset('mi',+this.value);toast('Run logged ★')"></div><div class="w"><div class="mu">Pace (min/mile, e.g. 8:35)</div><input value="${esc(f.pace)}" onchange="fset('pace',np(this.value))"></div></div>`:'<div class="mu" style="margin-top:10px">Rest day. Recovery counts.</div>';
  const recent=D.filter(d=>d<today&&fdone(S.fx[d])).slice(-5).reverse().map(d=>{const x=S.fx[d];return`<div class="item row"><b>${d}</b><span class="mu">${x.type==='run'?x.mi+' mi @ '+x.pace:x.split+' · '+x.ex.length+' lifts'}</span></div>`}).join('');
- return`<h1>Fitness</h1><div class="sub">${wk.length} session${wk.length===1?'':'s'} this week · ${miles.toFixed(1)} mi run</div>
+ return`${hero('hero-fit.jpg','50% 50%','Fitness')}<div class="sub">${wk.length} session${wk.length===1?'':'s'} this week · ${miles.toFixed(1)} mi run</div>
  <div class="card"><div class="row"><button class="x" onclick="fgo(-1)">‹</button><b>${d0===today?'Today':''} ${new Date(d0+'T12:00').toDateString().slice(0,10)}</b><button class="x" onclick="fgo(1)">›</button></div><div class="strip" style="margin:8px 0">${strip}</div>
  <div class="row"><div class="chips" style="margin:0">${[['weights','Weights'],['run','Run'],['rest','Rest']].map(([k,l])=>`<button class="chip ${t===k?'on':''}" onclick="fset('type','${k}')">${l}</button>`).join('')}</div><input type="number" inputmode="decimal" placeholder="lbs" value="${f.bw||''}" style="width:80px" onchange="fset('bw',+this.value||undefined)"></div>${body}</div>
  <div class="card"><b>Bodyweight (lbs)</b>${spark(bw,v=>v)}</div>
@@ -218,7 +223,7 @@ function fromCSV(text){const o={tab:'today',spend:[],food:{},faith:{},fx:{},caps
   else if(t==='food'||t==='faith'){(o[t][d]=o[t][d]||{})[f]=cv(f,v)}
   else if(t==='fx'){const x=(o.fx[d]=o.fx[d]||{ex:[]}),m=/^ex\.(\d+)\.(\w+)$/.exec(f);if(m){const e=(x.ex[+m[1]]=x.ex[+m[1]]||{});e[m[2]]=m[2]==='s'?v.split('|').map(y=>y===''?null:+y):cv(m[2],v)}else x[f]=cv(f,v)}});
  o.spend=Object.keys(sp).sort((a,b)=>a-b).map(k=>sp[k]);return o}
-function importData(t){t=t.trim();try{const o=t[0]==='{'?JSON.parse(t):fromCSV(t);if(!o.spend||!o.fx||!o.food||!o.faith)throw 0;if(!confirm('Replace ALL current data with this import?'))return;const ps=S.sync;S=o;S.sync=ps;S.fd=today;S.tab='today';S.caps=S.caps||[0,90,40];S.lastExp=S.lastExp||today;fmig();save();render();toast('Imported ★')}catch(e){toast('Not a valid CSV or backup')}}
+function importData(t){t=t.trim();try{const o=t[0]==='{'?JSON.parse(t):fromCSV(t);if(!o.spend||!o.fx||!o.food||!o.faith)throw 0;if(!confirm('Replace ALL current data with this import?'))return;const ps0=S.sync,la=S.lastSyncAt;S=o;S.sync=ps0;S.lastSyncAt=la;S.fd=today;S.tab='today';S.caps=S.caps||[0,90,40];S.lastExp=S.lastExp||today;fmig();save();render();toast('Imported ★')}catch(e){toast('Not a valid CSV or backup')}}
 function csvOut(){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+toCSV()],{type:'text/csv'}));a.download='daily-discipline-'+today+'.csv';document.body.appendChild(a);a.click();a.remove();S.lastExp=today;save();render();toast('CSV exported ★')}catch(e){toast('Download blocked — use Copy CSV')}}
 function csvCopy(){try{navigator.clipboard.writeText(toCSV());toast('CSV copied')}catch(e){toast('Copy failed')}}
 function csvFile(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>importData(r.result);r.readAsText(f);inp.value=''}
@@ -228,7 +233,9 @@ let AU=null;try{AU=JSON.parse(localStorage.getItem('dd_auth'))}catch(e){}
 const saveAU=()=>{try{AU?localStorage.setItem('dd_auth',JSON.stringify(AU)):localStorage.removeItem('dd_auth')}catch(e){}};
 const SYC={ok:'var(--ok)',busy:'var(--ac)',err:'var(--bad)',off:'var(--mu)'};
 let SY=AU?'busy':'off',SYT=AU?'Connecting…':'Not signed in',busy=false,pt;
-function setSY(st,msg){SY=st;SYT=msg||'';document.querySelectorAll('.sdot').forEach(d=>d.style.background=SYC[st]);const t=document.getElementById('ss');if(t)t.textContent=SYT}
+/* true when signed in and a sync succeeded within the last 24h */
+const bk=()=>!!(AU&&S.lastSyncAt&&Date.now()-S.lastSyncAt<864e5);
+function setSY(st,msg){const was=bk();SY=st;SYT=msg||'';if(st==='ok'&&AU){S.lastSyncAt=Date.now();persist()}document.querySelectorAll('.sdot').forEach(d=>d.style.background=SYC[st]);const t=document.getElementById('ss');if(t)t.textContent=SYT;if(st==='ok'&&was!==bk()&&S.tab==='today')render()}
 const payload=()=>({spend:S.spend,food:S.food,faith:S.faith,fx:S.fx,start:S.start,budget:S.budget,caps:S.caps,lastExp:S.lastExp});
 const hs=str=>{let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h+str.charCodeAt(i))|0;return h};
 const pushSoon=()=>{if(!AU)return;clearTimeout(pt);pt=setTimeout(()=>sync(),4000)};
@@ -246,7 +253,7 @@ async function sync(){if(!AU||busy)return;busy=true;setSY('busy','Syncing…');
  }catch(e){if(e.message!=='off')setSY('err',(/Failed to fetch|NetworkError|Load failed/.test(e.message)?'No connection: ':'Error: ')+e.message.slice(0,180))}
  busy=false}
 async function signIn(){const em=document.getElementById('em').value.trim(),pw=document.getElementById('pw').value;if(!em||!pw)return toast('Enter email and password');setSY('busy','Signing in…');try{await auth({email:em,password:pw},'password');await sync();render();toast('Signed in ★')}catch(e){setSY('err',e.message);toast(e.message)}}
-function signOut(){AU=null;saveAU();S.sync=undefined;persist();setSY('off','Not signed in');render()}
+function signOut(){AU=null;saveAU();S.sync=undefined;S.lastSyncAt=undefined;persist();setSY('off','Not signed in');render()}
 const cloudCard=()=>AU?`<div class="card"><b>Cloud backup</b><div class="mu" style="margin-top:6px">Signed in as ${esc(AU.em)}</div><div class="mu" style="margin:8px 0"><i class="dot sdot" style="background:${SYC[SY]}"></i><span id="ss">${esc(SYT)}</span></div><div class="f"><button class="go" onclick="sync()">Sync now</button><button class="go" style="background:var(--blue)" onclick="signOut()">Sign out</button></div></div>`:`<div class="card"><b>Cloud backup</b><div class="mu" style="margin:6px 0 8px">Sign in to back up and sync across devices.</div><input id="em" type="email" autocomplete="username" placeholder="Email" style="margin-bottom:8px"><input id="pw" type="password" autocomplete="current-password" placeholder="Password"><button class="go" onclick="signIn()">Sign in</button><div class="mu" id="ss" style="margin-top:8px">${esc(SYT)}</div></div>`;
 function todayV(){
  const e=S.food[today]||{},fa=S.faith[today]||{},fx=S.fx[today],h=new Date().getHours(),[a,b]=weekRange();
@@ -254,15 +261,16 @@ function todayV(){
  const meals=[e.b||e.bx,e.l||e.lx,e.d||e.dx].filter(Boolean).length,pct=dayPct(fa),left=H.filter(x=>CORE.includes(x[0])&&!hd(fa,x)).map(x=>x[1].split(' (')[0]);
  const sets=fx&&fx.ex?[fx.ex.reduce((s,x)=>s+sdone(x),0),fx.ex.reduce((s,x)=>s+x.s.length,0)]:[0,0];
  const ft=!fx?'Nothing planned yet':fx.type==='rest'?'Rest day':fx.type==='run'?(fx.mi>0?'Ran '+fx.mi+' mi ✓':'Run goal '+(fx.tgt||'?')+' mi'):fx.split+' · '+sets[0]+'/'+sets[1]+' sets';
- const risk=[];if(h>=18&&pct<.8)risk.push('Faith at '+pc(pct)+(left.length?' · open: '+left.join(', '):''));if(h>=19&&meals<3)risk.push((3-meals)+' meal(s) not logged');if(h>=17&&fx&&fx.type!=='rest'&&!fdone(fx))risk.push('Workout not started');if(tot>exp*1.15)risk.push('Spending is ahead of pace');if(!S.lastExp||(new Date(today)-new Date(S.lastExp))/864e5>=7)risk.push('Export a CSV backup'+(S.lastExp?' · last '+S.lastExp:''));
+ const risk=[];if(h>=18&&pct<.8)risk.push('Faith at '+pc(pct)+(left.length?' · open: '+left.join(', '):''));if(h>=19&&meals<3)risk.push((3-meals)+' meal(s) not logged');if(h>=17&&fx&&fx.type!=='rest'&&!fdone(fx))risk.push('Workout not started');if(tot>exp*1.15)risk.push('Spending is ahead of pace');if(!bk()&&(!S.lastExp||(new Date(today)-new Date(S.lastExp))/864e5>=7))risk.push('Export a CSV backup'+(S.lastExp?' · last '+S.lastExp:''));
  const D=days7(),row=(l,f)=>`<span class="mu">${l}</span>`+D.map(d=>{const v=f(d);return`<i class="dt ${v==null?'':v?'ok':'bad'}"></i>`}).join('');
  const card=(t,ic,m,sub)=>`<div class="card" onclick="go('${t}')"><div class="row"><b>${ICON[t]}${TABS[t][1]}</b><span class="mu">›</span></div><div class="big" style="font-size:22px">${m}</div><div class="mu">${sub}</div></div>`;
- return`<div class="hero">${flag()}<div class="ov"><div class="k">DAY ${dayN()} OF 54 · ${new Date().toDateString().toUpperCase()}</div><div class="t">Today's Briefing</div></div></div>
+ const dataCard=bk()?'':`<div class="card"><b>Your data</b><div class="mu">Stored on this device only. Export a CSV regularly${S.lastExp?' · last export '+S.lastExp:''}.</div><div class="f" style="margin-top:8px"><button class="go" onclick="csvOut()">Export CSV</button><button class="go" style="background:var(--blue)" onclick="document.getElementById('cf').click()">Import</button></div><input id="cf" type="file" accept=".csv,.json,text/csv" style="display:none" onchange="csvFile(this)"><div class="row" style="margin-top:10px"><button class="chip" onclick="csvCopy()">Copy CSV</button><button class="chip" onclick="importData(document.getElementById('bk').value)">Import pasted text</button></div><textarea id="bk" placeholder="Paste a CSV or an old backup here" style="width:100%;height:56px;margin-top:8px"></textarea></div>`;
+ return`${hero('hero-today.jpg','50% 55%',"Today's Briefing",'DAY '+dayN()+' OF 54 · '+new Date().toDateString().toUpperCase())}
  ${risk.length?`<div class="card" style="border-color:var(--bad)"><b>Heads up</b>${risk.map(r=>`<div class="mu">• ${r}</div>`).join('')}</div>`:''}
  ${card('fit','★',ft,'Tap to log sets')}${card('faith','★',pc(pct)+' of daily habits',left.length?'Core left: '+left.join(', '):'All core habits done')}${card('food','★',(e.fh!=null?e.fh+'h fast · ':'')+meals+'/3 meals',liveText())}${card('spend','★',weekLeft(),tot<=exp?'On pace for the week':'Ahead of pace')}
  <div class="card"><b>Last 7 days</b><div class="wk" style="margin-top:8px"><span></span>${D.map(d=>`<span class="mu" style="text-align:center">${dl(d)}</span>`).join('')}
  ${row('Fitness',d=>S.fx[d]?(S.fx[d].type==='rest'||fdone(S.fx[d])):null)}${row('Food',d=>S.food[d]&&S.food[d].fh!=null?S.food[d].fh>=16:null)}${row('Faith',d=>S.faith[d]?dayPct(S.faith[d])>=.8:null)}${row('Spending',d=>S.spend.filter(x=>x.d===d).reduce((s,x)=>s+x.a,0)<=S.budget/7)}</div><div class="mu" style="margin-top:6px"><i class="dot" style="background:var(--ok)"></i>Goal met <i class="dot" style="background:var(--bad);margin-left:8px"></i>Missed <i class="dot" style="background:var(--ln);margin-left:8px"></i>No data</div></div>
- ${cloudCard()}<div class="card"><b>Your data</b><div class="mu">Stored on this device only. Export a CSV regularly${S.lastExp?' · last export '+S.lastExp:''}.</div><div class="f" style="margin-top:8px"><button class="go" onclick="csvOut()">Export CSV</button><button class="go" style="background:var(--blue)" onclick="document.getElementById('cf').click()">Import</button></div><input id="cf" type="file" accept=".csv,.json,text/csv" style="display:none" onchange="csvFile(this)"><div class="row" style="margin-top:10px"><button class="chip" onclick="csvCopy()">Copy CSV</button><button class="chip" onclick="importData(document.getElementById('bk').value)">Import pasted text</button></div><textarea id="bk" placeholder="Paste a CSV or an old backup here" style="width:100%;height:56px;margin-top:8px"></textarea></div>`}
+ ${cloudCard()}${dataCard}`}
 function del(k,id){S[k]=S[k].filter(x=>x.id!==id);save();render()}
 function render(){autoFast();const y=scrollY;document.getElementById('app').innerHTML=(S.tab==='today'?'':hdr())+{today:todayV,spend,food,faith,fit}[S.tab]();
  document.getElementById('nav').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${S.tab===k?'on':''}" onclick="S.tab='${k}';save();render();scrollTo(0,0)"><span>${ICON[k]}</span>${v[1]}</button>`).join('');scrollTo(0,y)}
