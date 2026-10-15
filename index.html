@@ -3,47 +3,49 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Daily Discipline</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Condensed:wght@500;700&family=Roboto+Mono:wght@500;700&display=swap"><meta name="theme-color" content="#06090f"><link rel="icon" type="image/png" href="icon-192.png"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Discipline"><style>
-:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);color-scheme:dark;--bg:#06090f;--card:#0d1424;--tx:#e9edf5;--mu:#8793ab;--ln:#1c2740;--ac:#4a86dc;--ac2:#162a4d;--red:#b3122c;--bad:#ff5468;--flagR:#a50f1f;--flagB:#0a2a5e;--blue:#12397a;--ok:#3fb868}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Condensed:wght@500;700&family=Roboto+Mono:wght@500;700&display=swap"><meta name="theme-color" content="#000"><link rel="icon" type="image/png" href="icon-192.png"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Discipline"><style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);color-scheme:dark;--bg:#000;--card:#1b1b1b;--tx:#ececec;--mu:#9b9b9b;--ln:#333;--ac:#4a86dc;--ac2:#3b3b3b;--red:#b3122c;--bad:#ff5468;--flagR:#a50f1f;--flagB:#0a2a5e;--blue:#12397a;--ok:#3fb868}
 *{box-sizing:border-box}
 html,body{margin:0;color:var(--tx);font:16px/1.4 Roboto,"Helvetica Neue",Arial,sans-serif}
-body{background:radial-gradient(900px 320px at 50% -120px,#17306a66,transparent 70%),var(--bg)}
-main{max-width:520px;margin:0 auto;padding:14px 16px 110px}
+body{position:relative;background:var(--bg)}
+main{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:14px 16px 110px}
 h1,.hdr,nav button,.chip,.card>b:first-child,.card>.row:first-child>b{font-family:"Roboto Condensed",Roboto,Arial,sans-serif}
 h1{font-size:26px;margin:6px 0 2px;text-transform:uppercase;letter-spacing:.09em;font-weight:700}
 .sub{color:var(--mu);font-size:13px;margin-bottom:14px}
 .hdr{display:flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;padding-bottom:10px;border-bottom:1px solid var(--ln);margin-bottom:10px}.hdr span:last-child{margin-left:auto;color:var(--mu)}.hdr svg{width:34px;height:18px;border-radius:2px}
-.hero{position:relative;height:150px;border-radius:12px;overflow:hidden;margin:4px 0 14px;border:1px solid var(--ln);background:#0d1424 center/cover no-repeat}
-.hero .ov{position:absolute;inset:0;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(0deg,#06090ff0,#06090f22 75%)}
-.hero .k{font:700 11px "Roboto Mono",monospace;letter-spacing:.16em;color:#ffb3bd}.hero .t{font:700 28px "Roboto Condensed",sans-serif;letter-spacing:.1em;text-transform:uppercase}
-.card{background:var(--card);border:1px solid var(--ln);border-left:3px solid var(--red);border-radius:12px;padding:14px;margin-bottom:12px}
-.card>b:first-child,.card>.row:first-child>b{text-transform:uppercase;letter-spacing:.1em;font-size:13px;color:#cfd6e6}
+#bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;z-index:0;pointer-events:none;background:#000 top center/100% auto no-repeat;-webkit-mask-image:linear-gradient(#000 0%,#000 65%,transparent 100%);mask-image:linear-gradient(#000 0%,#000 65%,transparent 100%)}
+.ht.tp{justify-content:flex-start}
+.ht{height:150px;display:flex;flex-direction:column;justify-content:flex-end;margin:4px 0 12px;text-shadow:0 2px 12px #000,0 0 3px #000}
+.ht .k{font:700 11px "Roboto Mono",monospace;letter-spacing:.16em;color:#a8172b}.ht .t{font:700 30px "Roboto Condensed",sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.sub{text-shadow:0 1px 6px #000}
+.card{background:rgba(27,27,27,.93);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid var(--ln);border-left:3px solid var(--red);border-radius:12px;padding:14px;margin-bottom:12px}
+.card>b:first-child,.card>.row:first-child>b{text-transform:uppercase;letter-spacing:.1em;font-size:13px;color:#d6d6d6}
 .big{font:700 30px "Roboto Mono",monospace;letter-spacing:-1px}.mu{color:var(--mu);font-size:13px}
 .bar{height:10px;background:var(--ln);border-radius:3px;overflow:hidden;margin:10px 0 6px}.bar i{display:block;height:100%;background:var(--ac)}.bar.over i{background:var(--bad)}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .item{padding:10px 0;border-top:1px solid var(--ln)}.item:first-child{border-top:0}
 .x{background:none;border:0;color:var(--mu);font-size:18px;padding:4px 8px}
-input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid var(--ln);background:#0a101d;color:var(--tx);font:16px Roboto,Arial,sans-serif}
+input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid var(--ln);background:#111;color:var(--tx);font:16px Roboto,Arial,sans-serif}
 .f{display:grid;grid-template-columns:1fr 1fr;gap:8px}.f .w{grid-column:1/3}
 button.go{width:100%;padding:13px;border:0;border-radius:8px;background:var(--red);color:#fff;font:700 15px "Roboto Condensed",sans-serif;letter-spacing:.12em;text-transform:uppercase;margin-top:8px}
 .chart{display:flex;align-items:flex-end;gap:6px;height:70px;margin-top:10px;position:relative}.chart div{flex:1;text-align:center;font-size:11px;color:var(--mu)}
 .chart span{display:block;background:var(--ac2);border-radius:3px 3px 0 0;min-height:3px}.chart .ok span{background:var(--ok)}
 .gl{position:absolute;left:0;right:0;border-top:1px dashed var(--red);pointer-events:none}
-nav{position:fixed;left:0;right:0;bottom:0;background:#080d18;border-top:1px solid var(--ln);display:flex;padding:0 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav{z-index:10;position:fixed;left:0;right:0;bottom:0;background:#0a0a0a;border-top:1px solid var(--ln);display:flex;padding:0 6px calc(6px + env(safe-area-inset-bottom,0px))}
 nav button{flex:1;background:none;border:0;color:var(--mu);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:8px 0 4px;box-shadow:inset 0 2px 0 transparent}nav button span{display:block}nav .ic{width:24px;height:24px;margin:0 auto 2px}
 nav button.on{color:#fff;font-weight:700;box-shadow:inset 0 2px 0 var(--red)}
 .dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.chip{padding:9px 13px;border-radius:6px;border:1px solid var(--ln);background:#0a101d;color:var(--tx);font-size:13px;letter-spacing:.05em;text-transform:uppercase}.chip.on{background:var(--blue);border-color:var(--ac);color:#fff}
+.chip{padding:9px 13px;border-radius:6px;border:1px solid var(--ln);background:#111;color:var(--tx);font-size:13px;letter-spacing:.05em;text-transform:uppercase}.chip.on{background:var(--blue);border-color:var(--ac);color:#fff}
 .sets{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.chip.set{min-width:54px;padding:11px 0;text-align:center;opacity:.65;font:700 15px "Roboto Mono",monospace}.chip.set.on{opacity:1}
 .kg{width:68px!important;padding:8px!important;display:inline-block}
 .dt{display:block;height:16px;border-radius:3px;background:var(--ln)}.dt.ok{background:var(--ok)}.dt.bad{background:var(--bad)}
 .wk{display:grid;grid-template-columns:64px repeat(7,1fr);gap:6px;align-items:center}
 .strip{display:flex;gap:6px;overflow-x:auto}.strip .chip{flex:0 0 auto;padding:7px 10px;text-align:center;line-height:1.25}
 .ic{width:20px;height:20px}.card .ic{width:16px;height:16px;vertical-align:-3px;margin-right:6px}.chip .ic{width:14px;height:14px;margin:0;vertical-align:-2px}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--red);color:#fff;padding:10px 16px;border-radius:6px;font:700 14px "Roboto Condensed",sans-serif;letter-spacing:.06em;opacity:0;transition:opacity .25s;pointer-events:none;z-index:9}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));background:var(--red);color:#fff;padding:10px 16px;border-radius:6px;font:700 14px "Roboto Condensed",sans-serif;letter-spacing:.06em;opacity:0;transition:opacity .25s;pointer-events:none;z-index:11}
 </style></head>
-<body><main id="app"></main>
+<body><div id="bg"></div><main id="app"></main>
 <nav id="nav"></nav>
 <script>
 const TABS={today:['★','Today'],spend:['★','Spending'],food:['★','Food'],faith:['★','Faith'],fit:['★','Fitness']};
@@ -54,7 +56,7 @@ function flag(){let st='';for(let r=0;r<9;r++){const n=r%2?5:6;for(let k=0;k<n;k
  return`<svg viewBox="0 0 190 100" preserveAspectRatio="xMidYMid slice">${b}<rect width="76" height="53.85" fill="var(--flagB)"/>${st}</svg>`}
 const dayN=()=>Math.min(54,Math.max(1,Math.round((new Date(today)-new Date('2026-10-05'))/864e5)+1));
 const hdr=()=>`<div class="hdr">${flag()}<span>Daily Discipline</span><span>Day ${dayN()}/54 <i class="dot sdot" style="background:${SYC[SY]};margin:0 0 0 6px"></i></span></div>`;
-const hero=(img,pos,t,k)=>`<div class="hero" style="background-image:url(${img});background-position:${pos}"><div class="ov"><div class="k">${k||'DAY '+dayN()+' OF 54'}</div><div class="t">${t}</div></div></div>`;
+let BGI=null;const hero=(img,ar,t,k,f,al)=>{BGI=[img,ar,f||.85];return`<div class="ht${al==='t'?' tp':''}"><div class="k">${k||'DAY '+dayN()+' OF 54'}</div><div class="t">${t}</div></div>`};
 const CATS=[['Unavoidable Expenses','var(--ac)'],['Optional Stuff','#c9d1e3'],['Absolutely Frivolous Fun Stuff','#e0364f']];
 const iso=d=>{const z=new Date(d);return z.getFullYear()+'-'+String(z.getMonth()+1).padStart(2,'0')+'-'+String(z.getDate()).padStart(2,'0')};
 const today=iso(new Date());const money=n=>'$'+n.toFixed(2);const pc=n=>Math.round(n*100)+'%';
@@ -87,7 +89,7 @@ function spend(){
  const caps=S.caps||[0,90,40],exp=S.budget*(new Date().getDay()+1)/7,pace=tot<=exp?'On pace · '+money(exp-tot)+' of slack today':money(tot-exp)+' ahead of pace';const cn={};S.spend.forEach(x=>{const k=x.t.toLowerCase();cn[k]=(cn[k]||0)+1});const top=Object.keys(cn).filter(t=>!/['"]/.test(t)).sort((a,b)=>cn[b]-cn[a]).slice(0,5).map(t=>`<button class="chip" onclick="document.getElementById('t').value='${esc(t)}';sugCat('${esc(t)}')">${esc(t)}</button>`).join('');
  const cats=CATS.map(([n,c],i)=>{const v=wk.filter(x=>x.c===n).reduce((s,x)=>s+x.a,0),cp=caps[i];return`<div class="item"><div class="row"><span><i class="dot" style="background:${c}"></i>${sn(n)}</span><span><b>${money(v)}</b>${i?` / <input class="kg" type="number" value="${cp}" onchange="S.caps=S.caps||[0,90,40];S.caps[${i}]=+this.value;save();render()">`:''}</span></div>${i?`<div class="bar ${v>cp?'over':''}" style="height:6px;margin:6px 0 0"><i style="width:${Math.min(100,v/cp*100)}%"></i></div>`:''}</div>`}).join('');
  const rec=[...S.spend].sort((x,y)=>y.d.localeCompare(x.d)).slice(0,15).map(x=>`<div class="item row"><span><b>${esc(x.t)}</b><br><span class="mu">${x.d} · ${sn(x.c)}</span></span><span>${money(x.a)}<button class="x" onclick="del('spend','${x.id}')">×</button></span></div>`).join('');
- return`${hero('hero-spend.jpg','50% 15%','Spending')}<div class="sub">Week ${a} – ${b} · Sun–Sat</div>
+ return`${hero('hero-spend.jpg','960/720','Spending',null,.8,'b')}<div class="sub">Week ${a} – ${b} · Sun–Sat</div>
  <div class="card"><div class="mu">This week</div><div class="big">${money(tot)}</div><div class="bar ${rem<0?'over':''}"><i style="width:${Math.min(100,tot/S.budget*100)}%"></i></div><div class="row mu"><span>${rem>=0?money(rem)+' left':money(-rem)+' over'}</span><span>of ${money(S.budget)}</span></div><div class="mu">${pace}</div></div>
  <div class="card row"><div><div class="mu">Balance</div><div class="big">${money(S.start-all)}</div></div><div style="text-align:right"><div class="mu">Frivolous ratio</div><div class="big">${all?pc(fr/all):'0%'}</div></div></div>
  <div class="card"><b>Weekly category caps</b>${cats}</div>
@@ -107,7 +109,7 @@ function food(){
  const m=(l,f,sf)=>{const x=e[f+'x'];return`<div class="item"><div class="row"><span class="mu">${l}</span><span><button class="chip ${x?'on':''}" onclick="setV('food','${f}x',${!x})">${x?'✓ Skipped':'Skip'}</button>${x?'':` <input type="time" class="kg" style="width:112px!important" value="${esc(e[f+'t'])}" onchange="setV('food','${f}t',this.value)">`}</span></div>${x?'<div class="mu">Skipped — not counted in satiety or fast timing</div>':`<input placeholder="What did you eat?" value="${esc(e[f])}" onchange="setV('food','${f}',this.value)" style="margin:4px 0"><select onchange="setV('food','${sf}',this.value)"><option value="">Satiety…</option>${SAT.map(y=>`<option ${e[sf]===y?'selected':''}>${y}</option>`).join('')}</select>`}</div>`};
  const D=days7();const hrs=D.map(d=>(S.food[d]||{}).fh||0);
  const past=E.reverse().filter(([d])=>d!==today).slice(0,6).map(([d,x])=>`<div class="item"><div class="row"><b>${d}</b><span class="mu">${x.fh}h fast · ${x.sn===true?'snacked':x.sn===false?'no snacks':'–'}</span></div><div class="mu">${[x.b,x.l,x.d].filter(Boolean).map(esc).join(' · ')}</div></div>`).join('');
- return`${hero('hero-food.jpg','50% 20%','Food')}<div class="sub">Deficit & satiety sprint · Oct 9 – Dec 1 · 16:8 goal</div>
+ return`${hero('hero-food.jpg','960/842','Food',null,.95,'b')}<div class="sub">Deficit & satiety sprint · Oct 9 – Dec 1 · 16:8 goal</div>
  <div class="card"><div class="mu">Deficit habit score (target 80%)</div><div class="big">${pc(score)}</div><div class="bar"><i style="width:${score*100}%"></i></div>
  <div class="f mu" style="margin-top:8px"><span>Fasting goal met: <b>${pc(fast/n)}</b></span><span>Snack-free days: <b>${snf}</b></span><span>Avg fast: <b>${avg.toFixed(1)}h</b></span><span>Optimal satiety: <b>${pc(sat)}</b></span></div></div>
  <div class="card"><b>Fasting hours, last 7 days</b><div class="mu">Goal 16h</div>${chart(hrs,16,v=>v>=16,16)}</div><div class="card"><b>Bodyweight trend (lbs)</b><div class="mu">Is the deficit working?</div>${spark(Object.keys(S.fx).sort().filter(d=>S.fx[d].bw).map(d=>S.fx[d].bw),v=>v)}</div>
@@ -145,7 +147,7 @@ function faith(){
  const mins=[['pers','Personal study (min)'],['comp','Companion study (min)'],['lang','Language (min)'],['gtr','Guitar (min)'],['up','Uplifting media (min)'],['dis','Distracting media (min)']].map(([f,l])=>`<div><div class="mu">${l}</div>${num('faith',f,'0')}</div>`).join('');
  const bars=H.map(h=>{const l=logged(h);return`<div class="item"><div class="row"><span>${h[1]}</span><span class="mu">${l}/${el}</span></div><div class="bar" style="margin:6px 0 0;height:6px"><i style="width:${Math.min(100,l/el*100)}%"></i></div></div>`}).join('');
  const D=days7();
- return`${hero('hero-faith.jpg','50% 8%','Faith &amp; Discipleship')}<div class="sub">“Arise early, that your bodies and your minds may be invigorated.” — D&C 88:124</div>
+ return`${hero('hero-faith.jpg','620/400','Faith &amp; Discipleship',null,.95,'b')}<div class="sub">“Arise early, that your bodies and your minds may be invigorated.” — D&C 88:124</div>
  <div class="card"><div class="mu">Today</div><div class="big">${pc(dayPct(e))}</div><div class="bar"><i style="width:${dayPct(e)*100}%"></i></div>${chart(D.map(d=>dayPct(F[d])),1,v=>v>=.8,.8)}<div class="mu" style="margin-top:6px">Goal ≥80% · core habits (rise, study, family prayer) count double</div></div>
  <div class="card"><b>Check off today</b><div class="chips">${chips}</div><div class="f" style="margin-top:12px">${mins}</div><input placeholder="Media topics / notes" value="${esc(e.n)}" onchange="setV('faith','n',this.value)" style="margin-top:8px"></div>
  <div class="card"><b>54-day challenge</b><div class="f mu" style="margin-top:8px"><span>Since start <b>${(adh*100).toFixed(0)}%</b></span><span>Full 54 days <b>${(adhF*100).toFixed(0)}%</b></span><span>Scripture <b>${((sum('pers')+sum('comp'))/60).toFixed(1)}h</b></span><span>Skills <b>${((sum('lang')+sum('gtr'))/60).toFixed(1)}h</b></span><span>Distracting <b>${(sum('dis')/60).toFixed(1)}h</b></span></div></div>
@@ -197,7 +199,7 @@ function fit(){
   `<div class="f" style="margin-top:10px"><input id="en" class="w" placeholder="Add exercise"><input id="ek" type="number" inputmode="decimal" placeholder="kg"><input id="et" placeholder="Goal 3x10"></div><button class="go" onclick="exAdd()">Add exercise</button>`
  :t==='run'?`<div class="f" style="margin-top:10px"><div><div class="mu">Goal (mi)</div><input type="number" step="0.1" value="${f.tgt||''}" onchange="fset('tgt',+this.value)"></div><div><div class="mu">Distance (mi)</div><input type="number" step="0.01" value="${f.mi||''}" onchange="fset('mi',+this.value);toast('Run logged ★')"></div><div class="w"><div class="mu">Pace (min/mile, e.g. 8:35)</div><input value="${esc(f.pace)}" onchange="fset('pace',np(this.value))"></div></div>`:'<div class="mu" style="margin-top:10px">Rest day. Recovery counts.</div>';
  const recent=D.filter(d=>d<today&&fdone(S.fx[d])).slice(-5).reverse().map(d=>{const x=S.fx[d];return`<div class="item row"><b>${d}</b><span class="mu">${x.type==='run'?x.mi+' mi @ '+x.pace:x.split+' · '+x.ex.length+' lifts'}</span></div>`}).join('');
- return`${hero('hero-fit.jpg','50% 50%','Fitness')}<div class="sub">${wk.length} session${wk.length===1?'':'s'} this week · ${miles.toFixed(1)} mi run</div>
+ return`${hero('hero-fit.jpg','960/772','Fitness',null,.92,'t')}<div class="sub">${wk.length} session${wk.length===1?'':'s'} this week · ${miles.toFixed(1)} mi run</div>
  <div class="card"><div class="row"><button class="x" onclick="fgo(-1)">‹</button><b>${d0===today?'Today':''} ${new Date(d0+'T12:00').toDateString().slice(0,10)}</b><button class="x" onclick="fgo(1)">›</button></div><div class="strip" style="margin:8px 0">${strip}</div>
  <div class="row"><div class="chips" style="margin:0">${[['weights','Weights'],['run','Run'],['rest','Rest']].map(([k,l])=>`<button class="chip ${t===k?'on':''}" onclick="fset('type','${k}')">${l}</button>`).join('')}</div><input type="number" inputmode="decimal" placeholder="lbs" value="${f.bw||''}" style="width:80px" onchange="fset('bw',+this.value||undefined)"></div>${body}</div>
  <div class="card"><b>Bodyweight (lbs)</b>${spark(bw,v=>v)}</div>
@@ -265,14 +267,14 @@ function todayV(){
  const D=days7(),row=(l,f)=>`<span class="mu">${l}</span>`+D.map(d=>{const v=f(d);return`<i class="dt ${v==null?'':v?'ok':'bad'}"></i>`}).join('');
  const card=(t,ic,m,sub)=>`<div class="card" onclick="go('${t}')"><div class="row"><b>${ICON[t]}${TABS[t][1]}</b><span class="mu">›</span></div><div class="big" style="font-size:22px">${m}</div><div class="mu">${sub}</div></div>`;
  const dataCard=bk()?'':`<div class="card"><b>Your data</b><div class="mu">Stored on this device only. Export a CSV regularly${S.lastExp?' · last export '+S.lastExp:''}.</div><div class="f" style="margin-top:8px"><button class="go" onclick="csvOut()">Export CSV</button><button class="go" style="background:var(--blue)" onclick="document.getElementById('cf').click()">Import</button></div><input id="cf" type="file" accept=".csv,.json,text/csv" style="display:none" onchange="csvFile(this)"><div class="row" style="margin-top:10px"><button class="chip" onclick="csvCopy()">Copy CSV</button><button class="chip" onclick="importData(document.getElementById('bk').value)">Import pasted text</button></div><textarea id="bk" placeholder="Paste a CSV or an old backup here" style="width:100%;height:56px;margin-top:8px"></textarea></div>`;
- return`${hero('hero-today.jpg','50% 55%',"Today's Briefing",'DAY '+dayN()+' OF 54 · '+new Date().toDateString().toUpperCase())}
+ return`${hero('hero-today.jpg','960/727',"Today's Briefing",'DAY '+dayN()+' OF 54 · '+new Date().toDateString().toUpperCase(),.92,'t')}
  ${risk.length?`<div class="card" style="border-color:var(--bad)"><b>Heads up</b>${risk.map(r=>`<div class="mu">• ${r}</div>`).join('')}</div>`:''}
  ${card('fit','★',ft,'Tap to log sets')}${card('faith','★',pc(pct)+' of daily habits',left.length?'Core left: '+left.join(', '):'All core habits done')}${card('food','★',(e.fh!=null?e.fh+'h fast · ':'')+meals+'/3 meals',liveText())}${card('spend','★',weekLeft(),tot<=exp?'On pace for the week':'Ahead of pace')}
  <div class="card"><b>Last 7 days</b><div class="wk" style="margin-top:8px"><span></span>${D.map(d=>`<span class="mu" style="text-align:center">${dl(d)}</span>`).join('')}
  ${row('Fitness',d=>S.fx[d]?(S.fx[d].type==='rest'||fdone(S.fx[d])):null)}${row('Food',d=>S.food[d]&&S.food[d].fh!=null?S.food[d].fh>=16:null)}${row('Faith',d=>S.faith[d]?dayPct(S.faith[d])>=.8:null)}${row('Spending',d=>S.spend.filter(x=>x.d===d).reduce((s,x)=>s+x.a,0)<=S.budget/7)}</div><div class="mu" style="margin-top:6px"><i class="dot" style="background:var(--ok)"></i>Goal met <i class="dot" style="background:var(--bad);margin-left:8px"></i>Missed <i class="dot" style="background:var(--ln);margin-left:8px"></i>No data</div></div>
  ${cloudCard()}${dataCard}`}
 function del(k,id){S[k]=S[k].filter(x=>x.id!==id);save();render()}
-function render(){autoFast();const y=scrollY;document.getElementById('app').innerHTML=(S.tab==='today'?'':hdr())+{today:todayV,spend,food,faith,fit}[S.tab]();
+function render(){autoFast();const y=scrollY;BGI=null;const html=(S.tab==='today'?'':hdr())+{today:todayV,spend,food,faith,fit}[S.tab]();document.getElementById('app').innerHTML=html;const bg=document.getElementById('bg');bg.style.backgroundImage=BGI?`url(${BGI[0]})`:'none';bg.style.aspectRatio=BGI?BGI[1]:'auto';bg.style.height=BGI?'':'0';const ht=document.querySelector('.ht');if(ht&&BGI){const top=ht.getBoundingClientRect().top+scrollY;ht.style.height=Math.max(64,BGI[2]*bg.offsetHeight-top-12)+'px'}
  document.getElementById('nav').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${S.tab===k?'on':''}" onclick="S.tab='${k}';save();render();scrollTo(0,0)"><span>${ICON[k]}</span>${v[1]}</button>`).join('');scrollTo(0,y)}
 render();
 if(AU)sync();
