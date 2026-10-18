@@ -25,7 +25,11 @@ h1{font-size:26px;margin:6px 0 2px;text-transform:uppercase;letter-spacing:.09em
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .item{padding:10px 0;border-top:1px solid var(--ln)}.item:first-child{border-top:0}
 .x{background:none;border:0;color:var(--mu);font-size:18px;padding:4px 8px}
-input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid var(--ln);background:#111;color:var(--tx);font:16px Roboto,Arial,sans-serif}
+input,select,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid var(--ln);background:#111;color:var(--tx);font:16px Roboto,Arial,sans-serif;min-width:0;max-width:100%}
+input[type=date],input[type=time]{-webkit-appearance:none;appearance:none;display:block;text-align:left}
+input[type=date]:not(.kg){min-height:46px}
+input::-webkit-date-and-time-value{text-align:left;min-height:1.3em}
+.f>*{min-width:0}
 .f{display:grid;grid-template-columns:1fr 1fr;gap:8px}.f .w{grid-column:1/3}
 button.go{width:100%;padding:13px;border:0;border-radius:8px;background:var(--red);color:#fff;font:700 15px "Roboto Condensed",sans-serif;letter-spacing:.12em;text-transform:uppercase;margin-top:8px}
 .chart{display:flex;align-items:flex-end;gap:6px;height:70px;margin-top:10px;position:relative}.chart div{flex:1;text-align:center;font-size:11px;color:var(--mu)}
@@ -56,7 +60,7 @@ function flag(){let st='';for(let r=0;r<9;r++){const n=r%2?5:6;for(let k=0;k<n;k
  return`<svg viewBox="0 0 190 100" preserveAspectRatio="xMidYMid slice">${b}<rect width="76" height="53.85" fill="var(--flagB)"/>${st}</svg>`}
 const dayN=()=>Math.min(54,Math.max(1,Math.round((new Date(today)-new Date('2026-10-05'))/864e5)+1));
 const hdr=()=>`<div class="hdr">${flag()}<span>Daily Discipline</span><span>Day ${dayN()}/54 <i class="dot sdot" style="background:${SYC[SY]};margin:0 0 0 6px"></i></span></div>`;
-let BGI=null;const hero=(img,ar,t,k,f,al)=>{BGI=[img,ar,f||.85];return`<div class="ht${al==='t'?' tp':''}"><div class="k">${k||'DAY '+dayN()+' OF 54'}</div><div class="t">${t}</div></div>`};
+let BGI=null;const hero=(img,ar,t,k,f,al,dy)=>{BGI=[img,ar,f||.85,dy||0];return`<div class="ht${al==='t'?' tp':''}"><div class="k">${k||'DAY '+dayN()+' OF 54'}</div><div class="t">${t}</div></div>`};
 const CATS=[['Unavoidable Expenses','var(--ac)'],['Optional Stuff','#c9d1e3'],['Absolutely Frivolous Fun Stuff','#e0364f']];
 const iso=d=>{const z=new Date(d);return z.getFullYear()+'-'+String(z.getMonth()+1).padStart(2,'0')+'-'+String(z.getDate()).padStart(2,'0')};
 const today=iso(new Date());const money=n=>'$'+n.toFixed(2);const pc=n=>Math.round(n*100)+'%';
@@ -89,7 +93,7 @@ function spend(){
  const caps=S.caps||[0,90,40],exp=S.budget*(new Date().getDay()+1)/7,pace=tot<=exp?'On pace · '+money(exp-tot)+' of slack today':money(tot-exp)+' ahead of pace';const cn={};S.spend.forEach(x=>{const k=x.t.toLowerCase();cn[k]=(cn[k]||0)+1});const top=Object.keys(cn).filter(t=>!/['"]/.test(t)).sort((a,b)=>cn[b]-cn[a]).slice(0,5).map(t=>`<button class="chip" onclick="document.getElementById('t').value='${esc(t)}';sugCat('${esc(t)}')">${esc(t)}</button>`).join('');
  const cats=CATS.map(([n,c],i)=>{const v=wk.filter(x=>x.c===n).reduce((s,x)=>s+x.a,0),cp=caps[i];return`<div class="item"><div class="row"><span><i class="dot" style="background:${c}"></i>${sn(n)}</span><span><b>${money(v)}</b>${i?` / <input class="kg" type="number" value="${cp}" onchange="S.caps=S.caps||[0,90,40];S.caps[${i}]=+this.value;save();render()">`:''}</span></div>${i?`<div class="bar ${v>cp?'over':''}" style="height:6px;margin:6px 0 0"><i style="width:${Math.min(100,v/cp*100)}%"></i></div>`:''}</div>`}).join('');
  const rec=[...S.spend].sort((x,y)=>y.d.localeCompare(x.d)).slice(0,15).map(x=>`<div class="item row"><span><b>${esc(x.t)}</b><br><span class="mu">${x.d} · ${sn(x.c)}</span></span><span>${money(x.a)}<button class="x" onclick="del('spend','${x.id}')">×</button></span></div>`).join('');
- return`${hero('hero-spend.jpg','960/720','Spending',null,.8,'b')}<div class="sub">Week ${a} – ${b} · Sun–Sat</div>
+ return`${hero('hero-spend.jpg','960/720','Spending',null,.8,'b',36)}<div class="sub">Week ${a} – ${b} · Sun–Sat</div>
  <div class="card"><div class="mu">This week</div><div class="big">${money(tot)}</div><div class="bar ${rem<0?'over':''}"><i style="width:${Math.min(100,tot/S.budget*100)}%"></i></div><div class="row mu"><span>${rem>=0?money(rem)+' left':money(-rem)+' over'}</span><span>of ${money(S.budget)}</span></div><div class="mu">${pace}</div></div>
  <div class="card row"><div><div class="mu">Balance</div><div class="big">${money(S.start-all)}</div></div><div style="text-align:right"><div class="mu">Frivolous ratio</div><div class="big">${all?pc(fr/all):'0%'}</div></div></div>
  <div class="card"><b>Weekly category caps</b>${cats}</div>
@@ -136,9 +140,19 @@ setInterval(()=>{const el=document.getElementById('lf');if(el)el.textContent=liv
 function yT(v){const y=ydate(today);(S.food[y]=S.food[y]||{}).dt=v;save();render()}
 function fhManual(v){const e=(S.food[today]=S.food[today]||{});e.fm=v!=='';e.fh=v===''?undefined:+v;save();render()}
 /* FAITH */
-const H=[['rise','Arise 6:00 AM','c'],['ret','Retire 10:00 PM','c'],['plan','Daily planning','c'],['jrn','Journaling','c'],['pers','Personal scripture (≥30m)','m',30],['comp','Companion study (≥30m)','m',30],['fs','Family scripture','c'],['fp','Family prayer','c'],['lang','Language study','m',1],['gtr','Guitar','m',1],['up','Uplifting media','m',1]];
-const hd=(e,h)=>h[2]==='c'?!!e[h[0]]:(+e[h[0]]||0)>=h[3];
-const CORE=['rise','pers','comp','fp'],wt=h=>CORE.includes(h[0])?2:1,WT=H.reduce((s,h)=>s+wt(h),0),dayPct=e=>H.reduce((s,h)=>s+(hd(e||{},h)?wt(h):0),0)/WT;
+const H=[['rise','Arise 6:30 AM','w'],['ret','Retire 10:30 PM','c'],['plan','Daily planning','c'],['jrn','Journaling','c'],['pers','Personal scripture (≥30m)','m',30],['comp','Companion study (≥30m)','m',30],['fs','Family scripture','c'],['fp','Family prayer','c'],['lang','Language study','m',1],['gtr','Guitar','m',1]];
+const CORE=['rise','pers','comp','fp'],wt=h=>CORE.includes(h[0])?2:1,WT=H.reduce((s,h)=>s+wt(h),0);
+/* wake: full credit at/before 6:30, linear to 0 at 8:00, bonus (up to 1 pt) for waking before 6:30 (max at 5:30) */
+const WM=e=>{const m=/^(\d{1,2}):(\d{2})$/.exec((e&&e.wk)||'');return m?(+m[1])*60+(+m[2]):null};
+const wakeFrac=e=>{e=e||{};const w=WM(e);return w==null?(e.rise?1:0):w>=480?0:w<=390?1:(480-w)/90};
+const wakeBonus=e=>{const w=WM(e);return w==null||w>=390?0:Math.min(1,(390-w)/60)};
+/* mental diet: net (uplifting - distracting) minutes; 1 pt per 60 net min, positive capped at 3 pts, negative uncapped */
+const MD_PER_MIN=1/60,MD_CAP=3;
+const mdPts=e=>{e=e||{};const n=((+e.up||0)-(+e.dis||0))*MD_PER_MIN;return n>0?Math.min(n,MD_CAP):n};
+const hd=(e,h)=>h[2]==='w'?wakeFrac(e)>=1:h[2]==='c'?!!e[h[0]]:(+e[h[0]]||0)>=h[3];
+const pts=e=>{e=e||{};return H.reduce((s,h)=>s+(h[2]==='w'?wt(h)*wakeFrac(e):hd(e,h)?wt(h):0),0)+wakeBonus(e)+mdPts(e)};
+const dayPct=e=>Math.max(0,Math.min(1,pts(e)/WT));
+function wakeNow(){setV('faith','wk',nowT())}
 function faith(){
  const F=S.faith,keys=Object.keys(F);const e=F[today]||{};
  const logged=h=>keys.filter(d=>hd(F[d],h)).length,sum=f=>keys.reduce((s,d)=>s+(+F[d][f]||0),0);
@@ -146,11 +160,14 @@ function faith(){
  const chips=H.filter(h=>h[2]==='c').map(h=>`<button class="chip ${e[h[0]]?'on':''}" onclick="setV('faith','${h[0]}',${!e[h[0]]})">${e[h[0]]?'✓ ':''}${h[1]}</button>`).join('');
  const mins=[['pers','Personal study (min)'],['comp','Companion study (min)'],['lang','Language (min)'],['gtr','Guitar (min)'],['up','Uplifting media (min)'],['dis','Distracting media (min)']].map(([f,l])=>`<div><div class="mu">${l}</div>${num('faith',f,'0')}</div>`).join('');
  const bars=H.map(h=>{const l=logged(h);return`<div class="item"><div class="row"><span>${h[1]}</span><span class="mu">${l}/${el}</span></div><div class="bar" style="margin:6px 0 0;height:6px"><i style="width:${Math.min(100,l/el*100)}%"></i></div></div>`}).join('');
+ const wf=wakeFrac(e),wb=wakeBonus(e),mp=mdPts(e),net=(+e.up||0)-(+e.dis||0);
+ const wakeRow=`<div class="item row" style="border-top:0"><span>Arise · <span class="mu">${WM(e)!=null?(wf>=1?'full credit':wf>0?Math.round(wf*100)+'% credit':'no credit')+(wb>0?' + early bonus':''):'full by 6:30 · none at 8:00'}</span></span><span><button class="chip" onclick="wakeNow()">Now</button> <input type="time" class="kg" style="width:112px!important" value="${esc(e.wk)}" onchange="setV('faith','wk',this.value)"></span></div>`;
+ const mdNote=`Mental diet today: ${net>0?'+':''}${net} net min → ${mp>=0?'+':''}${(mp/WT*100).toFixed(0)}% of the day. Distracting time cancels uplifting, then subtracts. Day caps at 100%.`;
  const D=days7();
- return`${hero('hero-faith.jpg','620/400','Faith &amp; Discipleship',null,.95,'b')}<div class="sub">“Arise early, that your bodies and your minds may be invigorated.” — D&C 88:124</div>
+ return`${hero('hero-faith.jpg','620/400','Faith &amp; Discipleship',null,.95,'b',36)}<div class="sub">“Arise early, that your bodies and your minds may be invigorated.” — D&C 88:124</div>
  <div class="card"><div class="mu">Today</div><div class="big">${pc(dayPct(e))}</div><div class="bar"><i style="width:${dayPct(e)*100}%"></i></div>${chart(D.map(d=>dayPct(F[d])),1,v=>v>=.8,.8)}<div class="mu" style="margin-top:6px">Goal ≥80% · core habits (rise, study, family prayer) count double</div></div>
- <div class="card"><b>Check off today</b><div class="chips">${chips}</div><div class="f" style="margin-top:12px">${mins}</div><input placeholder="Media topics / notes" value="${esc(e.n)}" onchange="setV('faith','n',this.value)" style="margin-top:8px"></div>
- <div class="card"><b>54-day challenge</b><div class="f mu" style="margin-top:8px"><span>Since start <b>${(adh*100).toFixed(0)}%</b></span><span>Full 54 days <b>${(adhF*100).toFixed(0)}%</b></span><span>Scripture <b>${((sum('pers')+sum('comp'))/60).toFixed(1)}h</b></span><span>Skills <b>${((sum('lang')+sum('gtr'))/60).toFixed(1)}h</b></span><span>Distracting <b>${(sum('dis')/60).toFixed(1)}h</b></span></div></div>
+ <div class="card"><b>Check off today</b>${wakeRow}<div class="chips">${chips}</div><div class="f" style="margin-top:12px">${mins}</div><div class="mu" style="margin-top:8px">${mdNote}</div><input placeholder="Media topics / notes" value="${esc(e.n)}" onchange="setV('faith','n',this.value)" style="margin-top:8px"></div>
+ <div class="card"><b>54-day challenge</b><div class="f mu" style="margin-top:8px"><span>Since start <b>${(adh*100).toFixed(0)}%</b></span><span>Full 54 days <b>${(adhF*100).toFixed(0)}%</b></span><span>Scripture <b>${((sum('pers')+sum('comp'))/60).toFixed(1)}h</b></span><span>Skills <b>${((sum('lang')+sum('gtr'))/60).toFixed(1)}h</b></span><span>Uplifting <b>${(sum('up')/60).toFixed(1)}h</b></span><span>Distracting <b>${(sum('dis')/60).toFixed(1)}h</b></span></div></div>
  <div class="card"><b>Habits</b>${bars}</div>`}
 /* FITNESS */
 const WK="2026-09-26|Upper body|174|benchpress:40:3x10,dumbbell rows:10:3x10,overhead press:10:3x10,pull-ups:0:3x8,dumbbell curls:10:3x10,tricep extensions:10:3x10#2026-09-30|Legs|172|barbell squats:50:3x10,RDL:50:3x10,dumbbell lunges:10:3x10,calf raises:0:3x10,hanging leg raises:0:3x10#2026-10-01|Upper body|172|incline press:10:3x10,dumbbell rows:10:3x10,lateral raises:3:3x10,chin-ups:0:3x8,hammer curls:10:3x10,dips:0:3x8#2026-10-05|Legs|174|deadlifts:10:3x5,bulgarian split squats:10:3x10,goblet squats:10:3x10,calf raises:0:3x10,weighted plank:5:3x1min,hanging windshield wipers:0:3x10#2026-10-06|Upper body|174|benchpress:50:3x10,dumbbell rows:12:3x10,overhead press:10:3x10,pull-ups:0:3x8,dumbbell curls:10:3x10,tricep extensions:12:3x10#2026-10-08|Upper body|175|benchpress:50:3x10,incline press:12:3x8,overhead press:12:3x8,dips:0:3x8,lateral raises:4:3x10,tricep extensions:12:3x10#2026-10-09|Legs|174|barbell squats:50:3x5,deadlifts:50:3x5,bulgarian split squats:10:3x10,calf raises:0:3x10,hanging leg raises:0:3x10#2026-10-13|Upper body|173|pull-ups:0:3x8,dumbbell rows:12:3x8,RDL:50:3x8,lateral raises:4:3x10,dumbbell curls:12:3x10,hanging windshield wipers:0:3x10#2026-10-14|Upper body||incline press:12:3x8,benchpress:50:3x8,chin-ups:0:3x8,dips:0:3x8,overhead press:12:3x8,weighted plank:5:3x1min";
@@ -244,7 +261,7 @@ const pushSoon=()=>{if(!AU)return;clearTimeout(pt);pt=setTimeout(()=>sync(),4000
 async function auth(body,grant){const r=await fetch(SB+'/auth/v1/token?grant_type='+grant,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error_description||j.msg||'Sign-in failed');AU={at:j.access_token,rt:j.refresh_token,exp:Date.now()+j.expires_in*1000,uid:j.user.id,em:j.user.email};saveAU()}
 async function token(){if(!AU)throw new Error('off');if(AU.exp-30000<Date.now()){try{await auth({refresh_token:AU.rt},'refresh_token')}catch(e){AU=null;saveAU();setSY('off','Signed out — sign in again');throw new Error('off')}}return AU.at}
 async function sb(path,o={}){const t=await token();const r=await fetch(SB+'/rest/v1/'+path,{...o,headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...(o.headers||{})}});if(!r.ok){let m='';try{const j=await r.json();m=j.message||j.hint||j.error||JSON.stringify(j)}catch(e){}throw new Error('HTTP '+r.status+(m?' — '+m:''))}return r.json()}
-async function push(){const h0=S.h;const cur=(await sb('snapshots?select=data'))[0];const keep=cur&&cur.data?cur.data.meishe:undefined;const r=await sb('snapshots?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({user_id:AU.uid,data:{...payload(),meishe:keep},updated_at:new Date().toISOString()})});S.sync=r[0].updated_at;S.dirty=S.h!==h0;persist();if(S.dirty)pushSoon();setSY('ok','Synced '+nowT())}
+async function push(){const h0=S.h;const r=await sb('snapshots?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({user_id:AU.uid,data:payload(),updated_at:new Date().toISOString()})});S.sync=r[0].updated_at;S.dirty=S.h!==h0;persist();if(S.dirty)pushSoon();setSY('ok','Synced '+nowT())}
 function pull(row){const o=row.data;Object.assign(S,{spend:o.spend||[],food:o.food||{},faith:o.faith||{},fx:o.fx||{},start:o.start,budget:o.budget,caps:o.caps||[0,90,40],lastExp:o.lastExp});fmig();S.sync=row.updated_at;S.dirty=false;S.h=hs(JSON.stringify(payload()));persist();render();setSY('ok','Synced '+nowT());toast('Loaded cloud data ★')}
 async function sync(){if(!AU||busy)return;busy=true;setSY('busy','Syncing…');
  try{const row=(await sb('snapshots?select=data,updated_at'))[0];
@@ -260,7 +277,7 @@ const cloudCard=()=>AU?`<div class="card"><b>Cloud backup</b><div class="mu" sty
 function todayV(){
  const e=S.food[today]||{},fa=S.faith[today]||{},fx=S.fx[today],h=new Date().getHours(),[a,b]=weekRange();
  const tot=S.spend.filter(x=>x.d>=a&&x.d<=b).reduce((s,x)=>s+x.a,0),exp=S.budget*(new Date().getDay()+1)/7;
- const meals=[e.b||e.bx,e.l||e.lx,e.d||e.dx].filter(Boolean).length,pct=dayPct(fa),left=H.filter(x=>CORE.includes(x[0])&&!hd(fa,x)).map(x=>x[1].split(' (')[0]);
+ const meals=[e.b||e.bx,e.l||e.lx,e.d||e.dx].filter(Boolean).length,pct=dayPct(fa),left=H.filter(x=>CORE.includes(x[0])&&!(x[0]==='rise'?(WM(fa)!=null||fa.rise):hd(fa,x))).map(x=>x[1].split(' (')[0]);
  const sets=fx&&fx.ex?[fx.ex.reduce((s,x)=>s+sdone(x),0),fx.ex.reduce((s,x)=>s+x.s.length,0)]:[0,0];
  const ft=!fx?'Nothing planned yet':fx.type==='rest'?'Rest day':fx.type==='run'?(fx.mi>0?'Ran '+fx.mi+' mi ✓':'Run goal '+(fx.tgt||'?')+' mi'):fx.split+' · '+sets[0]+'/'+sets[1]+' sets';
  const risk=[];if(h>=18&&pct<.8)risk.push('Faith at '+pc(pct)+(left.length?' · open: '+left.join(', '):''));if(h>=19&&meals<3)risk.push((3-meals)+' meal(s) not logged');if(h>=17&&fx&&fx.type!=='rest'&&!fdone(fx))risk.push('Workout not started');if(tot>exp*1.15)risk.push('Spending is ahead of pace');if(!bk()&&(!S.lastExp||(new Date(today)-new Date(S.lastExp))/864e5>=7))risk.push('Export a CSV backup'+(S.lastExp?' · last '+S.lastExp:''));
@@ -274,7 +291,7 @@ function todayV(){
  ${row('Fitness',d=>S.fx[d]?(S.fx[d].type==='rest'||fdone(S.fx[d])):null)}${row('Food',d=>S.food[d]&&S.food[d].fh!=null?S.food[d].fh>=16:null)}${row('Faith',d=>S.faith[d]?dayPct(S.faith[d])>=.8:null)}${row('Spending',d=>S.spend.filter(x=>x.d===d).reduce((s,x)=>s+x.a,0)<=S.budget/7)}</div><div class="mu" style="margin-top:6px"><i class="dot" style="background:var(--ok)"></i>Goal met <i class="dot" style="background:var(--bad);margin-left:8px"></i>Missed <i class="dot" style="background:var(--ln);margin-left:8px"></i>No data</div></div>
  ${cloudCard()}${dataCard}`}
 function del(k,id){S[k]=S[k].filter(x=>x.id!==id);save();render()}
-function render(){autoFast();const y=scrollY;BGI=null;const html=(S.tab==='today'?'':hdr())+{today:todayV,spend,food,faith,fit}[S.tab]();document.getElementById('app').innerHTML=html;const bg=document.getElementById('bg');bg.style.backgroundImage=BGI?`url(${BGI[0]})`:'none';bg.style.aspectRatio=BGI?BGI[1]:'auto';bg.style.height=BGI?'':'0';const ht=document.querySelector('.ht');if(ht&&BGI){const top=ht.getBoundingClientRect().top+scrollY;ht.style.height=Math.max(64,BGI[2]*bg.offsetHeight-top-12)+'px'}
+function render(){autoFast();const y=scrollY;BGI=null;const html=(S.tab==='today'?'':hdr())+{today:todayV,spend,food,faith,fit}[S.tab]();document.getElementById('app').innerHTML=html;const bg=document.getElementById('bg');bg.style.backgroundImage=BGI?`url(${BGI[0]})`:'none';bg.style.aspectRatio=BGI?BGI[1]:'auto';bg.style.height=BGI?'':'0';bg.style.top=(BGI?BGI[3]:0)+'px';const ht=document.querySelector('.ht');if(ht&&BGI){const top=ht.getBoundingClientRect().top+scrollY;ht.style.height=Math.max(64,BGI[2]*bg.offsetHeight+BGI[3]-top-12)+'px'}
  document.getElementById('nav').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${S.tab===k?'on':''}" onclick="S.tab='${k}';save();render();scrollTo(0,0)"><span>${ICON[k]}</span>${v[1]}</button>`).join('');scrollTo(0,y)}
 render();
 if(AU)sync();
