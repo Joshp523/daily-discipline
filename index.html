@@ -279,25 +279,38 @@ const PF=SB+'/functions/v1/plaid';let BANK=[],busyB=false;
 async function pcall(body){const t=await token();const r=await fetch(PF,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'HTTP '+r.status);return j}
 const loadPlaid=()=>window.Plaid?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.plaid.com/link/v2/stable/link-initialize.js';s.onload=ok;s.onerror=()=>no(new Error('Could not load Plaid'));document.head.appendChild(s)});
 async function bankFlush(){if(!(S.ackQ||[]).length)return;try{await pcall({action:'ack',ids:S.ackQ});S.ackQ=[];persist()}catch(e){}}
-async function bankSync(silent){if(!AU||busyB)return;if(silent&&S.bankAt&&Date.now()-S.bankAt<6e5)return;busyB=true;
- try{await bankFlush();const j=await pcall({action:'sync'});S.plaidOn=!!j.linked;BANK=(j.txns||[]).filter(x=>!(S.ackQ||[]).includes(x.id));S.bankAt=Date.now();S.bankErr='';persist();
+async function bankSync(silent,auto){if(!AU||busyB)return;if(silent&&S.bankAt&&Date.now()-S.bankAt<6e5)return;busyB=true;
+ try{await bankFlush();const j=await pcall({action:'sync'});S.plaidOn=!!j.linked;const fl=S.bankFrom=S.bankFrom||'2026-09-21',skip=[];let hit=false;BANK=[];
+  for(const x of (j.txns||[])){if((S.ackQ||[]).includes(x.id))continue;if(x.date<fl){skip.push(x.id);continue}
+   const c=auto?catFor(x.name):-1;
+   if(c>=0){S.spend.push({id:uid(),t:x.name,a:Math.round(x.amount*100)/100,d:x.date,c:CATS[c][0],src:'bank',bid:x.id});hit=true;skip.push(x.id);continue}BANK.push(x)}
+  if(skip.length)S.ackQ=(S.ackQ||[]).concat(skip);if(hit)save();S.bankAt=Date.now();S.bankErr='';persist();if(skip.length)bankFlush();
   if(S.tab==='spend'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))render();
   if(!silent)toast(j.linked?(BANK.length?BANK.length+' to review':'Up to date'):'No bank connected')}
  catch(e){if(e.message!=='off'){S.bankErr=e.message.slice(0,140);persist();if(!silent)toast(S.bankErr)}}
  busyB=false}
 async function bankConnect(upd){if(!AU)return toast('Sign in first');
- try{toast('Opening bank link…');await loadPlaid();const j=await pcall({action:'link_token',update:!!upd});
+ try{toast('Opening bank link…');await loadPlaid();const j=await pcall({action:'link_token',update:!!upd});if(!j.link_token)throw new Error('The plaid function did not return a link token. Check its code and secrets.');
   Plaid.create({token:j.link_token,onSuccess:async pt=>{try{if(!upd)await pcall({action:'exchange',public_token:pt});S.plaidOn=true;S.bankAt=0;S.bankErr='';persist();toast('Bank connected ★');await bankSync();render()}catch(e){toast(e.message.slice(0,90))}},onExit:err=>{if(err)toast((err.display_message||err.error_message||'Link closed').slice(0,90))}}).open()}
  catch(e){toast(e.message.slice(0,90))}}
 async function bankUnlink(){if(!confirm('Disconnect the bank? You can reconnect later.'))return;try{await pcall({action:'unlink'});S.plaidOn=false;BANK=[];S.ackQ=[];S.bankErr='';persist();render();toast('Disconnected')}catch(e){toast(e.message.slice(0,90))}}
-function bkAdd(i,c){const x=BANK[i];if(!x)return;S.spend.push({id:uid(),t:x.name,a:Math.round(x.amount*100)/100,d:x.date,c:CATS[c][0]});BANK.splice(i,1);S.ackQ=(S.ackQ||[]).concat(x.id);save();render();toast(weekLeft());bankFlush()}
+function bkAdd(i,c){const x=BANK[i];if(!x)return;S.spend.push({id:uid(),t:x.name,a:Math.round(x.amount*100)/100,d:x.date,c:CATS[c][0],src:'bank',bid:x.id});(S.catMem=S.catMem||{})[x.name.toLowerCase()]=c;BANK.splice(i,1);S.ackQ=(S.ackQ||[]).concat(x.id);save();render();toast(weekLeft());bankFlush()}
 function bkSkip(i){const x=BANK[i];if(!x)return;BANK.splice(i,1);S.ackQ=(S.ackQ||[]).concat(x.id);persist();render();bankFlush()}
 function bankUI(){if(!AU)return'';
  if(!S.plaidOn)return`<div class="card"><b>Bank connection</b><div class="mu" style="margin:6px 0 4px">Pull your transactions in automatically. Set this up from a computer browser.</div>${S.bankErr?`<div class="mu" style="color:var(--bad)">${esc(S.bankErr)}</div>`:''}<button class="go" onclick="bankConnect()">Connect bank</button></div>`;
  const sg=n=>{const k=String(n).toLowerCase(),x=[...S.spend].reverse().find(y=>y.t.toLowerCase()===k);return x?CATS.findIndex(c=>c[0]===x.c):-1};
- const lg=x=>S.spend.some(y=>Math.abs(y.a-x.amount)<.005&&Math.abs((new Date(y.d)-new Date(x.date))/864e5)<=3);
- const rows=BANK.map((x,i)=>{const s=sg(x.name);return`<div class="item"><div class="row"><span><b>${esc(x.name)}</b><br><span class="mu">${x.date}${lg(x)?' · looks already logged':''}</span></span><span>${money(+x.amount)}<button class="x" onclick="bkSkip(${i})">×</button></span></div><div class="chips" style="margin-top:6px">${['Unavoidable','Optional','Frivolous'].map((n,c)=>`<button class="chip ${s===c?'on':''}" onclick="bkAdd(${i},${c})">${n}</button>`).join('')}</div></div>`}).join('');
- return`<div class="card"><div class="row"><b>Bank inbox</b><span><button class="chip" onclick="bankSync()">Sync</button> <button class="chip" onclick="bankConnect(true)">Reconnect</button></span></div>${S.bankErr?`<div class="mu" style="color:var(--bad);margin-top:6px">${esc(S.bankErr)}</div>`:''}${rows||'<div class="mu" style="margin-top:8px">All caught up</div>'}<div class="row" style="margin-top:10px"><span class="mu">${S.bankAt?'Updated '+new Date(S.bankAt).toTimeString().slice(0,5):''}</span><button class="chip" onclick="bankUnlink()">Disconnect</button></div></div>`}
+ const rows=BANK.map((x,i)=>{const s=sg(x.name);return`<div class="item"><div class="row"><span><b>${esc(x.name)}</b><br><span class="mu">${x.date}</span></span><span>${money(+x.amount)}<button class="x" onclick="bkSkip(${i})">×</button></span></div><div class="chips" style="margin-top:6px">${['Unavoidable','Optional','Frivolous'].map((n,c)=>`<button class="chip ${s===c?'on':''}" onclick="bkAdd(${i},${c})">${n}</button>`).join('')}</div></div>`}).join('');
+ return`<div class="card"><div class="row"><b>Bank inbox</b><span><button class="chip" onclick="bankSync()">Sync</button> <button class="chip" onclick="bankConnect(true)">Reconnect</button></span></div>${S.bankErr?`<div class="mu" style="color:var(--bad);margin-top:6px">${esc(S.bankErr)}</div>`:''}${rows||'<div class="mu" style="margin-top:8px">All caught up</div>'}<div class="row" style="margin-top:10px"><span class="mu">Import from</span><input type="date" style="width:150px" value="${esc(S.bankFrom||'2026-09-21')}" onchange="S.bankFrom=this.value;persist()"></div><div class="row" style="margin-top:10px"><span class="mu">${S.bankAt?'Updated '+new Date(S.bankAt).toTimeString().slice(0,5):''}</span><span><button class="chip" onclick="bankReplace()">Start over</button> <button class="chip" onclick="bankUnlink()">Disconnect</button></span></div></div>`}
+const catFor=n=>{const k=String(n).toLowerCase(),m=S.catMem||{};if(k in m)return m[k];const h=Object.keys(m).find(z=>z.length>=4&&(k.includes(z)||z.includes(k)));return h!==undefined?m[h]:-1};
+async function bankReplace(){const from='2026-09-21';
+ if(!confirm('This DELETES all '+S.spend.length+' spending entries you have now and replaces them with bank transactions dated '+from+' or later. A CSV backup downloads first. Continue?'))return;
+ try{try{localStorage.setItem('dd_spend_backup',JSON.stringify(S.spend))}catch(e){}
+  csvOut();
+  const mem={};S.spend.forEach(x=>{const i=CATS.findIndex(c=>c[0]===x.c);if(i>=0)mem[x.t.toLowerCase()]=i});
+  S.catMem=Object.assign(S.catMem||{},mem);S.spend=[];S.bankFrom=from;S.ackQ=[];S.bankAt=0;BANK=[];save();
+  await pcall({action:'resetall'});render();await bankSync(false,true);
+  toast('Rebuilt from bank ★ '+S.spend.length+' added'+(BANK.length?', '+BANK.length+' to categorize':''))}
+ catch(e){toast(e.message.slice(0,90))}}
 function todayV(){
  const e=S.food[today]||{},fa=S.faith[today]||{},fx=S.fx[today],h=new Date().getHours(),[a,b]=weekRange();
  const tot=S.spend.filter(x=>x.d>=a&&x.d<=b).reduce((s,x)=>s+x.a,0),exp=S.budget*(new Date().getDay()+1)/7;
