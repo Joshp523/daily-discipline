@@ -1,0 +1,597 @@
+﻿table,date,field,value
+settings,,start,3590.06
+settings,,budget,200
+settings,,cap0,0
+settings,,cap1,90
+settings,,cap2,40
+spend,2026-09-21,0.t,Mobimatter Abu
+spend,2026-09-21,0.c,Unavoidable Expenses
+spend,2026-09-21,0.a,10.27
+spend,2026-09-21,1.t,Walmart
+spend,2026-09-21,1.c,Unavoidable Expenses
+spend,2026-09-21,1.a,35.66
+spend,2026-09-21,2.t,La Corbeille Molenbeek-sai
+spend,2026-09-21,2.c,Unavoidable Expenses
+spend,2026-09-21,2.a,11.49
+spend,2026-09-21,3.t,Kruidvat
+spend,2026-09-21,3.c,Unavoidable Expenses
+spend,2026-09-21,3.a,11.48
+spend,2026-09-21,4.t,Nmbs Sncb
+spend,2026-09-21,4.c,Unavoidable Expenses
+spend,2026-09-21,4.a,11.37
+spend,2026-09-21,5.t,Cafe Inn
+spend,2026-09-21,5.c,Unavoidable Expenses
+spend,2026-09-21,5.a,13.35
+spend,2026-09-21,6.t,Venmo
+spend,2026-09-21,6.c,Unavoidable Expenses
+spend,2026-09-21,6.a,2
+spend,2026-09-21,7.t,Carrefour Belgie Mag
+spend,2026-09-21,7.c,Unavoidable Expenses
+spend,2026-09-21,7.a,47.16
+food,2026-10-09,b,"3 eggs, bread, ham, cheese"
+food,2026-10-09,d,"chicken pasta, creamed spinach"
+food,2026-10-09,l,fish and chips
+food,2026-10-09,bs,Overfull
+food,2026-10-09,ds,Satisfied
+food,2026-10-09,fh,8
+food,2026-10-09,ls,Satisfied
+food,2026-10-09,sn,true
+food,2026-10-10,b,croque
+food,2026-10-10,d,date roll and ice cream
+food,2026-10-10,l,"fries, mayo, croissant, red bull"
+food,2026-10-10,bs,Full
+food,2026-10-10,ds,Satisfied
+food,2026-10-10,fh,7
+food,2026-10-10,ls,Satisfied
+food,2026-10-10,sn,false
+food,2026-10-11,b,
+food,2026-10-11,d,mashed potatoes
+food,2026-10-11,l,spam and rice
+food,2026-10-11,bs,Satisfied
+food,2026-10-11,ds,Full
+food,2026-10-11,fh,16
+food,2026-10-11,ls,Satisfied
+food,2026-10-11,sn,false
+food,2026-10-12,b,"eggs, bread, yogurt"
+food,2026-10-12,d,bacon nacho fries
+food,2026-10-12,l,"mashed potatoes, croissant, diet coke, milk"
+food,2026-10-12,bs,Satisfied
+food,2026-10-12,ds,Satisfied
+food,2026-10-12,fh,8
+food,2026-10-12,ls,Full
+food,2026-10-12,sn,true
+food,2026-10-13,b,apple and red bull
+food,2026-10-13,d,"wok mix and rice, diet coke, milk"
+food,2026-10-13,l,grilled cheese and tomato soup
+food,2026-10-13,bs,Satisfied
+food,2026-10-13,ds,Full
+food,2026-10-13,dt,18:55
+food,2026-10-13,fh,11.5
+food,2026-10-13,ls,Overfull
+food,2026-10-14,d,"Chicken leg, rice, milk, Jupiter 0.0, chocolate"
+food,2026-10-14,l,"Bologna and cheese sandwich, Red Bull, apple"
+food,2026-10-14,bx,true
+food,2026-10-14,ds,Satisfied
+food,2026-10-14,dt,18:30
+food,2026-10-14,fh,18.2
+food,2026-10-14,ls,Satisfied
+food,2026-10-14,lt,13:09
+food,2026-10-14,sn,false
+food,2026-10-15,d,"Creamed spinach and chicken pasta, juice, happy hour snacks"
+food,2026-10-15,l,"Chicken leg, rice, salad, milk"
+food,2026-10-15,bx,true
+food,2026-10-15,ds,Full
+food,2026-10-15,dt,17:41
+food,2026-10-15,fh,17.8
+food,2026-10-15,ls,Full
+food,2026-10-15,lt,12:20
+food,2026-10-15,sn,false
+food,2026-10-16,b,Apple pie with milk
+food,2026-10-16,l,Spinach chicken Pasta salad and apple pie
+food,2026-10-16,bs,Satisfied
+food,2026-10-16,bt,06:24
+food,2026-10-16,dt,22:30
+food,2026-10-16,fh,12.7
+food,2026-10-16,ls,Full
+food,2026-10-16,lt,13:00
+food,2026-10-17,b,Spam fried rice
+food,2026-10-17,d,Whatever‘s in the fridge
+food,2026-10-17,l,Chocolate cake
+food,2026-10-17,bs,Full
+food,2026-10-17,bt,10:42
+food,2026-10-17,ds,Full
+food,2026-10-17,dt,23:44
+food,2026-10-17,fh,12.2
+food,2026-10-17,ls,Satisfied
+food,2026-10-17,lt,15:43
+food,2026-10-17,sn,true
+food,2026-10-18,b,Chocolate cake and balogna sandwiches
+food,2026-10-18,d,"Shrimp curry, rice, and fanta"
+food,2026-10-18,l,Chocolate cake
+food,2026-10-18,bs,Full
+food,2026-10-18,bt,10:33
+food,2026-10-18,ds,Overfull
+food,2026-10-18,dt,18:00
+food,2026-10-18,fh,10.8
+food,2026-10-18,ls,Satisfied
+food,2026-10-18,lt,02:33
+food,2026-10-18,sn,true
+food,2026-10-19,b,Baloney sandwich and red bull
+food,2026-10-19,d,Fried chicken and peas and milk
+food,2026-10-19,l,Vietnamese Beef sandwich
+food,2026-10-19,bs,Satisfied
+food,2026-10-19,bt,08:18
+food,2026-10-19,ds,Full
+food,2026-10-19,dt,18:48
+food,2026-10-19,fh,14.3
+food,2026-10-19,ls,Full
+food,2026-10-19,lt,12:30
+food,2026-10-19,sn,false
+food,2026-10-20,b,"Pumpkin pie, whipped cream, milk"
+food,2026-10-20,l,Pumpkin pie and whipped cream
+food,2026-10-20,bs,Full
+food,2026-10-20,bt,00:01
+food,2026-10-20,dt,23:20
+food,2026-10-20,fh,5.2
+food,2026-10-20,ls,Full
+food,2026-10-20,lt,08:20
+food,2026-10-21,b,Pumpkin pie
+food,2026-10-21,l,"Shrimp curry, rice, pumpkin pie"
+food,2026-10-21,bs,Satisfied
+food,2026-10-21,bt,08:28
+food,2026-10-21,dt,20:03
+food,2026-10-21,fh,9.1
+food,2026-10-21,ls,Full
+food,2026-10-21,lt,13:03
+food,2026-10-22,b,Half an apple pie
+food,2026-10-22,bs,Full
+food,2026-10-22,bt,08:26
+food,2026-10-22,fh,12.4
+faith,2026-10-05,n,Daily wire
+faith,2026-10-05,up,0
+faith,2026-10-05,dis,270
+faith,2026-10-05,gtr,0
+faith,2026-10-05,comp,10
+faith,2026-10-05,lang,20
+faith,2026-10-05,pers,30
+faith,2026-10-06,n,Daily wire
+faith,2026-10-06,up,0
+faith,2026-10-06,dis,270
+faith,2026-10-06,gtr,0
+faith,2026-10-06,comp,0
+faith,2026-10-06,lang,20
+faith,2026-10-06,pers,30
+faith,2026-10-07,n,Daily wire
+faith,2026-10-07,up,0
+faith,2026-10-07,dis,270
+faith,2026-10-07,gtr,0
+faith,2026-10-07,comp,10
+faith,2026-10-07,lang,0
+faith,2026-10-07,pers,30
+faith,2026-10-08,n,Daily wire
+faith,2026-10-08,up,0
+faith,2026-10-08,dis,270
+faith,2026-10-08,gtr,0
+faith,2026-10-08,comp,0
+faith,2026-10-08,lang,0
+faith,2026-10-08,pers,15
+faith,2026-10-09,n,"DW, Tolstoy"
+faith,2026-10-09,up,15
+faith,2026-10-09,dis,141
+faith,2026-10-09,gtr,0
+faith,2026-10-09,comp,0
+faith,2026-10-09,lang,0
+faith,2026-10-09,pers,15
+faith,2026-10-10,n,"DW, Tolstoy"
+faith,2026-10-10,up,3
+faith,2026-10-10,dis,41
+faith,2026-10-10,gtr,0
+faith,2026-10-10,comp,0
+faith,2026-10-10,lang,0
+faith,2026-10-10,pers,10
+faith,2026-10-11,n,lamb of god
+faith,2026-10-11,up,30
+faith,2026-10-11,dis,0
+faith,2026-10-11,gtr,25
+faith,2026-10-11,comp,30
+faith,2026-10-11,lang,0
+faith,2026-10-11,pers,30
+faith,2026-10-12,n,"The office, DW"
+faith,2026-10-12,up,0
+faith,2026-10-12,dis,200
+faith,2026-10-12,gtr,0
+faith,2026-10-12,comp,30
+faith,2026-10-12,lang,0
+faith,2026-10-12,pers,30
+faith,2026-10-13,n,"GC, music, DW, office"
+faith,2026-10-13,up,50
+faith,2026-10-13,dis,140
+faith,2026-10-13,gtr,10
+faith,2026-10-13,comp,30
+faith,2026-10-13,lang,0
+faith,2026-10-13,pers,30
+faith,2026-10-14,n,"Daily wire, gencon"
+faith,2026-10-14,fp,true
+faith,2026-10-14,fs,true
+faith,2026-10-14,up,10
+faith,2026-10-14,dis,120
+faith,2026-10-14,gtr,10
+faith,2026-10-14,jrn,true
+faith,2026-10-14,comp,40
+faith,2026-10-14,lang,15
+faith,2026-10-14,pers,40
+faith,2026-10-14,plan,true
+faith,2026-10-15,n,Daily wire
+faith,2026-10-15,fs,true
+faith,2026-10-15,dis,120
+faith,2026-10-15,jrn,true
+faith,2026-10-15,ret,true
+faith,2026-10-15,comp,30
+faith,2026-10-15,lang,10
+faith,2026-10-15,pers,10
+faith,2026-10-15,plan,true
+faith,2026-10-16,n,"General conference, Tolstoy"
+faith,2026-10-16,fp,true
+faith,2026-10-16,fs,true
+faith,2026-10-16,up,25
+faith,2026-10-16,jrn,true
+faith,2026-10-16,lang,15
+faith,2026-10-16,pers,30
+faith,2026-10-16,plan,true
+faith,2026-10-16,rise,true
+faith,2026-10-18,n,Music and the office and DW
+faith,2026-10-18,fp,true
+faith,2026-10-18,fs,true
+faith,2026-10-18,up,5
+faith,2026-10-18,wk,10:05
+faith,2026-10-18,dis,90
+faith,2026-10-18,gtr,35
+faith,2026-10-18,jrn,true
+faith,2026-10-18,ret,true
+faith,2026-10-18,comp,30
+faith,2026-10-18,lang,30
+faith,2026-10-18,pers,40
+faith,2026-10-18,plan,true
+faith,2026-10-19,n,The office and daily wire
+faith,2026-10-19,fp,true
+faith,2026-10-19,fs,true
+faith,2026-10-19,wk,06:41
+faith,2026-10-19,dis,90
+faith,2026-10-19,jrn,true
+faith,2026-10-19,ret,false
+faith,2026-10-19,comp,true
+faith,2026-10-19,lang,15
+faith,2026-10-19,pers,40
+faith,2026-10-19,plan,true
+faith,2026-10-20,wk,08:15
+faith,2026-10-21,wk,08:00
+faith,2026-10-22,wk,08:15
+fx,2026-09-22,type,run
+fx,2026-09-22,tgt,2
+fx,2026-09-22,mi,2.08
+fx,2026-09-22,pace,11:01
+fx,2026-09-23,type,run
+fx,2026-09-23,tgt,2
+fx,2026-09-23,mi,2.02
+fx,2026-09-23,pace,9:24
+fx,2026-09-24,type,run
+fx,2026-09-24,tgt,2
+fx,2026-09-24,mi,1.35
+fx,2026-09-24,pace,10:45
+fx,2026-09-26,type,weights
+fx,2026-09-26,split,Upper body
+fx,2026-09-26,bw,174
+fx,2026-09-26,ex.0.n,benchpress
+fx,2026-09-26,ex.0.kg,40
+fx,2026-09-26,ex.0.t,3x10
+fx,2026-09-26,ex.0.s,10|10|10
+fx,2026-09-26,ex.1.n,dumbbell rows
+fx,2026-09-26,ex.1.kg,10
+fx,2026-09-26,ex.1.t,3x10
+fx,2026-09-26,ex.1.s,10|10|10
+fx,2026-09-26,ex.2.n,overhead press
+fx,2026-09-26,ex.2.kg,10
+fx,2026-09-26,ex.2.t,3x10
+fx,2026-09-26,ex.2.s,10|10|10
+fx,2026-09-26,ex.3.n,pull-ups
+fx,2026-09-26,ex.3.kg,0
+fx,2026-09-26,ex.3.t,3x8
+fx,2026-09-26,ex.3.s,8|8|8
+fx,2026-09-26,ex.4.n,dumbbell curls
+fx,2026-09-26,ex.4.kg,10
+fx,2026-09-26,ex.4.t,3x10
+fx,2026-09-26,ex.4.s,10|10|10
+fx,2026-09-26,ex.5.n,tricep extensions
+fx,2026-09-26,ex.5.kg,10
+fx,2026-09-26,ex.5.t,3x10
+fx,2026-09-26,ex.5.s,10|10|10
+fx,2026-09-30,type,weights
+fx,2026-09-30,split,Legs
+fx,2026-09-30,bw,172
+fx,2026-09-30,ex.0.n,barbell squats
+fx,2026-09-30,ex.0.kg,50
+fx,2026-09-30,ex.0.t,3x10
+fx,2026-09-30,ex.0.s,10|10|10
+fx,2026-09-30,ex.1.n,RDL
+fx,2026-09-30,ex.1.kg,50
+fx,2026-09-30,ex.1.t,3x10
+fx,2026-09-30,ex.1.s,10|10|10
+fx,2026-09-30,ex.2.n,dumbbell lunges
+fx,2026-09-30,ex.2.kg,10
+fx,2026-09-30,ex.2.t,3x10
+fx,2026-09-30,ex.2.s,10|10|10
+fx,2026-09-30,ex.3.n,calf raises
+fx,2026-09-30,ex.3.kg,0
+fx,2026-09-30,ex.3.t,3x10
+fx,2026-09-30,ex.3.s,10|10|10
+fx,2026-09-30,ex.4.n,hanging leg raises
+fx,2026-09-30,ex.4.kg,0
+fx,2026-09-30,ex.4.t,3x10
+fx,2026-09-30,ex.4.s,10|10|10
+fx,2026-10-01,type,weights
+fx,2026-10-01,split,Upper body
+fx,2026-10-01,bw,172
+fx,2026-10-01,ex.0.n,incline press
+fx,2026-10-01,ex.0.kg,10
+fx,2026-10-01,ex.0.t,3x10
+fx,2026-10-01,ex.0.s,10|10|10
+fx,2026-10-01,ex.1.n,dumbbell rows
+fx,2026-10-01,ex.1.kg,10
+fx,2026-10-01,ex.1.t,3x10
+fx,2026-10-01,ex.1.s,10|10|10
+fx,2026-10-01,ex.2.n,lateral raises
+fx,2026-10-01,ex.2.kg,3
+fx,2026-10-01,ex.2.t,3x10
+fx,2026-10-01,ex.2.s,10|10|10
+fx,2026-10-01,ex.3.n,chin-ups
+fx,2026-10-01,ex.3.kg,0
+fx,2026-10-01,ex.3.t,3x8
+fx,2026-10-01,ex.3.s,8|8|8
+fx,2026-10-01,ex.4.n,hammer curls
+fx,2026-10-01,ex.4.kg,10
+fx,2026-10-01,ex.4.t,3x10
+fx,2026-10-01,ex.4.s,10|10|10
+fx,2026-10-01,ex.5.n,dips
+fx,2026-10-01,ex.5.kg,0
+fx,2026-10-01,ex.5.t,3x8
+fx,2026-10-01,ex.5.s,8|8|8
+fx,2026-10-05,type,weights
+fx,2026-10-05,split,Legs
+fx,2026-10-05,bw,174
+fx,2026-10-05,ex.0.n,deadlifts
+fx,2026-10-05,ex.0.kg,10
+fx,2026-10-05,ex.0.t,3x5
+fx,2026-10-05,ex.0.s,5|5|5
+fx,2026-10-05,ex.1.n,bulgarian split squats
+fx,2026-10-05,ex.1.kg,10
+fx,2026-10-05,ex.1.t,3x10
+fx,2026-10-05,ex.1.s,10|10|10
+fx,2026-10-05,ex.2.n,goblet squats
+fx,2026-10-05,ex.2.kg,10
+fx,2026-10-05,ex.2.t,3x10
+fx,2026-10-05,ex.2.s,10|10|10
+fx,2026-10-05,ex.3.n,calf raises
+fx,2026-10-05,ex.3.kg,0
+fx,2026-10-05,ex.3.t,3x10
+fx,2026-10-05,ex.3.s,10|10|10
+fx,2026-10-05,ex.4.n,weighted plank
+fx,2026-10-05,ex.4.kg,5
+fx,2026-10-05,ex.4.t,3x1min
+fx,2026-10-05,ex.4.s,1|1|1
+fx,2026-10-05,ex.5.n,hanging windshield wipers
+fx,2026-10-05,ex.5.kg,0
+fx,2026-10-05,ex.5.t,3x10
+fx,2026-10-05,ex.5.s,10|10|10
+fx,2026-10-06,type,weights
+fx,2026-10-06,split,Upper body
+fx,2026-10-06,bw,174
+fx,2026-10-06,ex.0.n,benchpress
+fx,2026-10-06,ex.0.kg,50
+fx,2026-10-06,ex.0.t,3x10
+fx,2026-10-06,ex.0.s,10|10|10
+fx,2026-10-06,ex.1.n,dumbbell rows
+fx,2026-10-06,ex.1.kg,12
+fx,2026-10-06,ex.1.t,3x10
+fx,2026-10-06,ex.1.s,10|10|10
+fx,2026-10-06,ex.2.n,overhead press
+fx,2026-10-06,ex.2.kg,10
+fx,2026-10-06,ex.2.t,3x10
+fx,2026-10-06,ex.2.s,10|10|10
+fx,2026-10-06,ex.3.n,pull-ups
+fx,2026-10-06,ex.3.kg,0
+fx,2026-10-06,ex.3.t,3x8
+fx,2026-10-06,ex.3.s,8|8|8
+fx,2026-10-06,ex.4.n,dumbbell curls
+fx,2026-10-06,ex.4.kg,10
+fx,2026-10-06,ex.4.t,3x10
+fx,2026-10-06,ex.4.s,10|10|10
+fx,2026-10-06,ex.5.n,tricep extensions
+fx,2026-10-06,ex.5.kg,12
+fx,2026-10-06,ex.5.t,3x10
+fx,2026-10-06,ex.5.s,10|10|10
+fx,2026-10-07,type,run
+fx,2026-10-07,tgt,2
+fx,2026-10-07,mi,2.07
+fx,2026-10-07,pace,8:35
+fx,2026-10-08,type,weights
+fx,2026-10-08,split,Upper body
+fx,2026-10-08,bw,175
+fx,2026-10-08,ex.0.n,benchpress
+fx,2026-10-08,ex.0.kg,50
+fx,2026-10-08,ex.0.t,3x10
+fx,2026-10-08,ex.0.s,10|10|10
+fx,2026-10-08,ex.1.n,incline press
+fx,2026-10-08,ex.1.kg,12
+fx,2026-10-08,ex.1.t,3x8
+fx,2026-10-08,ex.1.s,8|8|8
+fx,2026-10-08,ex.2.n,overhead press
+fx,2026-10-08,ex.2.kg,12
+fx,2026-10-08,ex.2.t,3x8
+fx,2026-10-08,ex.2.s,8|8|8
+fx,2026-10-08,ex.3.n,dips
+fx,2026-10-08,ex.3.kg,0
+fx,2026-10-08,ex.3.t,3x8
+fx,2026-10-08,ex.3.s,8|8|8
+fx,2026-10-08,ex.4.n,lateral raises
+fx,2026-10-08,ex.4.kg,4
+fx,2026-10-08,ex.4.t,3x10
+fx,2026-10-08,ex.4.s,10|10|10
+fx,2026-10-08,ex.5.n,tricep extensions
+fx,2026-10-08,ex.5.kg,12
+fx,2026-10-08,ex.5.t,3x10
+fx,2026-10-08,ex.5.s,10|10|10
+fx,2026-10-09,type,weights
+fx,2026-10-09,split,Legs
+fx,2026-10-09,bw,174
+fx,2026-10-09,ex.0.n,barbell squats
+fx,2026-10-09,ex.0.kg,50
+fx,2026-10-09,ex.0.t,3x5
+fx,2026-10-09,ex.0.s,5|5|5
+fx,2026-10-09,ex.1.n,deadlifts
+fx,2026-10-09,ex.1.kg,50
+fx,2026-10-09,ex.1.t,3x5
+fx,2026-10-09,ex.1.s,5|5|5
+fx,2026-10-09,ex.2.n,bulgarian split squats
+fx,2026-10-09,ex.2.kg,10
+fx,2026-10-09,ex.2.t,3x10
+fx,2026-10-09,ex.2.s,10|10|10
+fx,2026-10-09,ex.3.n,calf raises
+fx,2026-10-09,ex.3.kg,0
+fx,2026-10-09,ex.3.t,3x10
+fx,2026-10-09,ex.3.s,10|10|10
+fx,2026-10-09,ex.4.n,hanging leg raises
+fx,2026-10-09,ex.4.kg,0
+fx,2026-10-09,ex.4.t,3x10
+fx,2026-10-09,ex.4.s,10|10|10
+fx,2026-10-10,type,run
+fx,2026-10-10,tgt,2.2
+fx,2026-10-10,mi,2.29
+fx,2026-10-10,pace,8:38
+fx,2026-10-11,type,rest
+fx,2026-10-11,split,Upper body
+fx,2026-10-12,type,run
+fx,2026-10-12,tgt,2.5
+fx,2026-10-12,mi,3.4
+fx,2026-10-12,pace,8:29
+fx,2026-10-13,type,weights
+fx,2026-10-13,split,Upper body
+fx,2026-10-13,bw,173
+fx,2026-10-13,ex.0.n,pull-ups
+fx,2026-10-13,ex.0.kg,0
+fx,2026-10-13,ex.0.t,3x8
+fx,2026-10-13,ex.0.s,8|8|8
+fx,2026-10-13,ex.1.n,dumbbell rows
+fx,2026-10-13,ex.1.kg,12
+fx,2026-10-13,ex.1.t,3x8
+fx,2026-10-13,ex.1.s,8|8|8
+fx,2026-10-13,ex.2.n,RDL
+fx,2026-10-13,ex.2.kg,50
+fx,2026-10-13,ex.2.t,3x8
+fx,2026-10-13,ex.2.s,8|8|8
+fx,2026-10-13,ex.3.n,lateral raises
+fx,2026-10-13,ex.3.kg,4
+fx,2026-10-13,ex.3.t,3x10
+fx,2026-10-13,ex.3.s,10|10|10
+fx,2026-10-13,ex.4.n,dumbbell curls
+fx,2026-10-13,ex.4.kg,12
+fx,2026-10-13,ex.4.t,3x10
+fx,2026-10-13,ex.4.s,10|10|10
+fx,2026-10-13,ex.5.n,hanging windshield wipers
+fx,2026-10-13,ex.5.kg,0
+fx,2026-10-13,ex.5.t,3x10
+fx,2026-10-13,ex.5.s,10|10|10
+fx,2026-10-14,type,run
+fx,2026-10-14,split,Upper body
+fx,2026-10-14,tgt,2.5
+fx,2026-10-14,mi,2.79
+fx,2026-10-14,pace,8.39
+fx,2026-10-15,type,weights
+fx,2026-10-15,split,Upper body
+fx,2026-10-15,bw,171
+fx,2026-10-15,ex.0.n,Incline press
+fx,2026-10-15,ex.0.kg,12
+fx,2026-10-15,ex.0.t,3x8
+fx,2026-10-15,ex.0.s,8|8|8
+fx,2026-10-15,ex.1.n,Benchpress
+fx,2026-10-15,ex.1.kg,50
+fx,2026-10-15,ex.1.t,3x8
+fx,2026-10-15,ex.1.s,8|8|8
+fx,2026-10-15,ex.2.n,Chin-ups
+fx,2026-10-15,ex.2.kg,0
+fx,2026-10-15,ex.2.t,3x8
+fx,2026-10-15,ex.2.s,8|8|8
+fx,2026-10-15,ex.3.n,Dips
+fx,2026-10-15,ex.3.kg,0
+fx,2026-10-15,ex.3.t,3x8
+fx,2026-10-15,ex.3.s,8|8|8
+fx,2026-10-15,ex.4.n,Overhead press
+fx,2026-10-15,ex.4.kg,12
+fx,2026-10-15,ex.4.t,3x8
+fx,2026-10-15,ex.4.s,8|8|8
+fx,2026-10-15,ex.5.n,Weighted plank
+fx,2026-10-15,ex.5.kg,5
+fx,2026-10-15,ex.5.t,3x1min
+fx,2026-10-15,ex.5.s,1|1|1
+fx,2026-10-16,type,rest
+fx,2026-10-16,split,Legs
+fx,2026-10-16,ex.0.n,barbell squats
+fx,2026-10-16,ex.0.kg,50
+fx,2026-10-16,ex.0.t,3x5
+fx,2026-10-16,ex.0.s,||
+fx,2026-10-16,ex.1.n,deadlifts
+fx,2026-10-16,ex.1.kg,50
+fx,2026-10-16,ex.1.t,3x5
+fx,2026-10-16,ex.1.s,||
+fx,2026-10-16,ex.2.n,bulgarian split squats
+fx,2026-10-16,ex.2.kg,10
+fx,2026-10-16,ex.2.t,3x10
+fx,2026-10-16,ex.2.s,||
+fx,2026-10-16,ex.3.n,calf raises
+fx,2026-10-16,ex.3.kg,0
+fx,2026-10-16,ex.3.t,3x10
+fx,2026-10-16,ex.3.s,||
+fx,2026-10-16,ex.4.n,hanging leg raises
+fx,2026-10-16,ex.4.kg,0
+fx,2026-10-16,ex.4.t,3x10
+fx,2026-10-16,ex.4.s,||
+fx,2026-10-17,type,run
+fx,2026-10-17,split,Push
+fx,2026-10-17,tgt,3
+fx,2026-10-17,mi,3.6
+fx,2026-10-17,pace,8:20
+fx,2026-10-18,type,rest
+fx,2026-10-18,split,Push
+fx,2026-10-19,type,weights
+fx,2026-10-19,split,Push
+fx,2026-10-19,ex.0.n,Decline pushups
+fx,2026-10-19,ex.0.kg,0
+fx,2026-10-19,ex.0.t,3x12
+fx,2026-10-19,ex.0.s,12|12|12
+fx,2026-10-19,ex.1.n,Table rows
+fx,2026-10-19,ex.1.kg,0
+fx,2026-10-19,ex.1.t,3x12
+fx,2026-10-19,ex.1.s,12|12|12
+fx,2026-10-19,ex.2.n,Chair dips
+fx,2026-10-19,ex.2.kg,0
+fx,2026-10-19,ex.2.t,3x12
+fx,2026-10-19,ex.2.s,12|12|12
+fx,2026-10-19,ex.3.n,Handstand pushups
+fx,2026-10-19,ex.3.kg,0
+fx,2026-10-19,ex.3.t,3x8
+fx,2026-10-19,ex.3.s,8|8|8
+fx,2026-10-19,ex.4.n,Weighted plank
+fx,2026-10-19,ex.4.kg,0
+fx,2026-10-19,ex.4.t,3x1min
+fx,2026-10-19,ex.4.s,1|1|1
+fx,2026-10-20,type,run
+fx,2026-10-20,split,Pull
+fx,2026-10-20,tgt,3
+fx,2026-10-20,mi,0
+fx,2026-10-21,type,weights
+fx,2026-10-21,split,Pull
+fx,2026-10-22,type,weights
+fx,2026-10-22,split,Legs
+fx,2026-10-24,type,run
+fx,2026-10-24,split,Push
+fx,2026-10-25,type,rest
+fx,2026-10-25,split,Push

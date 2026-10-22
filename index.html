@@ -259,20 +259,22 @@ let SY=AU?'busy':'off',SYT=AU?'Connecting…':'Not signed in',busy=false,pt;
 /* true when signed in and a sync succeeded within the last 24h */
 const bk=()=>!!(AU&&S.lastSyncAt&&Date.now()-S.lastSyncAt<864e5);
 function setSY(st,msg){const was=bk();SY=st;SYT=msg||'';if(st==='ok'&&AU){S.lastSyncAt=Date.now();persist()}document.querySelectorAll('.sdot').forEach(d=>d.style.background=SYC[st]);const t=document.getElementById('ss');if(t)t.textContent=SYT;if(st==='ok'&&was!==bk()&&S.tab==='today')render()}
-const payload=()=>({spend:S.spend,food:S.food,faith:S.faith,fx:S.fx,start:S.start,budget:S.budget,caps:S.caps,lastExp:S.lastExp});
+/* true bank balance, shared with the household app through the snapshot row */
+const balObj=()=>{const A=S.acct||[];if(!A.length)return null;const av=a=>a.avail!=null?a.avail:(a.cur||0),cash=A.filter(a=>a.type==='depository').reduce((s,a)=>s+av(a),0),owed=A.filter(a=>a.type==='credit').reduce((s,a)=>s+(a.cur||0),0);return{net:Math.round((cash-owed)*100)/100,cash:Math.round(cash*100)/100,owed:Math.round(owed*100)/100,at:S.acctAt?new Date(S.acctAt).toISOString():null}};
+const payload=()=>({spend:S.spend,food:S.food,faith:S.faith,fx:S.fx,start:S.start,budget:S.budget,caps:S.caps,lastExp:S.lastExp,bal:balObj()});
 const hs=str=>{let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h+str.charCodeAt(i))|0;return h};
 const pushSoon=()=>{if(!AU)return;clearTimeout(pt);pt=setTimeout(()=>sync(),4000)};
 async function auth(body,grant){const r=await fetch(SB+'/auth/v1/token?grant_type='+grant,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error_description||j.msg||'Sign-in failed');AU={at:j.access_token,rt:j.refresh_token,exp:Date.now()+j.expires_in*1000,uid:j.user.id,em:j.user.email};saveAU()}
 async function token(){if(!AU)throw new Error('off');if(AU.exp-30000<Date.now()){try{await auth({refresh_token:AU.rt},'refresh_token')}catch(e){AU=null;saveAU();setSY('off','Signed out — sign in again');throw new Error('off')}}return AU.at}
 async function sb(path,o={}){const t=await token();const r=await fetch(SB+'/rest/v1/'+path,{...o,headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...(o.headers||{})}});if(!r.ok){let m='';try{const j=await r.json();m=j.message||j.hint||j.error||JSON.stringify(j)}catch(e){}throw new Error('HTTP '+r.status+(m?' — '+m:''))}return r.json()}
-async function push(){const h0=S.h;const r=await sb('snapshots?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({user_id:AU.uid,data:payload(),updated_at:new Date().toISOString()})});S.sync=r[0].updated_at;S.dirty=S.h!==h0;persist();if(S.dirty)pushSoon();setSY('ok','Synced '+nowT())}
+async function push(base){const h0=S.h;const r=await sb('snapshots?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({user_id:AU.uid,data:{...(base||{}),...payload()},updated_at:new Date().toISOString()})});S.sync=r[0].updated_at;S.dirty=S.h!==h0;persist();if(S.dirty)pushSoon();setSY('ok','Synced '+nowT())}
 function pull(row){const o=row.data;Object.assign(S,{spend:o.spend||[],food:o.food||{},faith:o.faith||{},fx:o.fx||{},start:o.start,budget:o.budget,caps:o.caps||[0,90,40],lastExp:o.lastExp});fmig();S.sync=row.updated_at;S.dirty=false;S.h=hs(JSON.stringify(payload()));persist();render();setSY('ok','Synced '+nowT());toast('Loaded cloud data ★')}
 async function sync(){if(!AU||busy)return;busy=true;setSY('busy','Syncing…');
  try{const row=(await sb('snapshots?select=data,updated_at'))[0];
   if(!row)await push();
-  else if(S.sync===row.updated_at){if(S.dirty)await push();else setSY('ok','Synced '+nowT())}
+  else if(S.sync===row.updated_at){if(S.dirty)await push(row.data);else setSY('ok','Synced '+nowT())}
   else if(!S.dirty&&S.sync)pull(row);
-  else{if(confirm('Cloud data already exists'+(S.sync?' (changed on another device) and this device has unsynced changes':'')+'.\n\nOK = load the cloud data here (replaces this device).\nCancel = overwrite the cloud with this device.'))pull(row);else await push()}
+  else{if(confirm('Cloud data already exists'+(S.sync?' (changed on another device) and this device has unsynced changes':'')+'.\n\nOK = load the cloud data here (replaces this device).\nCancel = overwrite the cloud with this device.'))pull(row);else await push(row.data)}
  }catch(e){if(e.message!=='off')setSY('err',(/Failed to fetch|NetworkError|Load failed/.test(e.message)?'No connection: ':'Error: ')+e.message.slice(0,180))}
  busy=false}
 async function signIn(){const em=document.getElementById('em').value.trim(),pw=document.getElementById('pw').value;if(!em||!pw)return toast('Enter email and password');setSY('busy','Signing in…');try{await auth({email:em,password:pw},'password');await sync();render();toast('Signed in ★')}catch(e){setSY('err',e.message);toast(e.message)}}
@@ -283,7 +285,7 @@ const PF=SB+'/functions/v1/plaid';let BANK=[],busyB=false;
 async function pcall(body){const t=await token();const r=await fetch(PF,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'HTTP '+r.status);return j}
 const loadPlaid=()=>window.Plaid?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.plaid.com/link/v2/stable/link-initialize.js';s.onload=ok;s.onerror=()=>no(new Error('Could not load Plaid'));document.head.appendChild(s)});
 async function bankFlush(){if(!(S.ackQ||[]).length)return;try{await pcall({action:'ack',ids:S.ackQ});S.ackQ=[];persist()}catch(e){}}
-async function bankBal(live){try{const j=await pcall({action:'balances',live:!!live});S.acct=j.accounts||[];S.acctAt=Date.now();S.acctErr='';persist();if(live)toast('Balances updated')}catch(e){S.acctErr=e.message.slice(0,140);persist();if(live)toast(S.acctErr)}if(S.tab==='spend'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))render()}
+async function bankBal(live){try{const j=await pcall({action:'balances',live:!!live});S.acct=j.accounts||[];S.acctAt=Date.now();S.acctErr='';save();if(live)toast('Balances updated')}catch(e){S.acctErr=e.message.slice(0,140);persist();if(live)toast(S.acctErr)}if(S.tab==='spend'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))render()}
 async function bankSync(silent,auto){if(!AU||busyB)return;if(silent&&S.bankAt&&Date.now()-S.bankAt<6e5)return;busyB=true;
  try{await bankFlush();const j=await pcall({action:'sync'});S.plaidOn=!!j.linked;const fl=S.bankFrom=S.bankFrom||'2026-09-21',skip=[];let hit=false;BANK=[];
   for(const x of (j.txns||[])){if((S.ackQ||[]).includes(x.id))continue;if(x.date<fl){skip.push(x.id);continue}
@@ -298,7 +300,7 @@ async function bankConnect(upd){if(!AU)return toast('Sign in first');
  try{toast('Opening bank link…');await loadPlaid();const j=await pcall({action:'link_token',update:!!upd});if(!j.link_token)throw new Error('The plaid function did not return a link token. Check its code and secrets.');
   Plaid.create({token:j.link_token,onSuccess:async pt=>{try{if(!upd)await pcall({action:'exchange',public_token:pt});S.plaidOn=true;S.bankAt=0;S.bankErr='';persist();toast('Bank connected ★');await bankSync();render()}catch(e){toast(e.message.slice(0,90))}},onExit:err=>{if(err)toast((err.display_message||err.error_message||'Link closed').slice(0,90))}}).open()}
  catch(e){toast(e.message.slice(0,90))}}
-async function bankUnlink(){if(!confirm('Disconnect the bank? You can reconnect later.'))return;try{await pcall({action:'unlink'});S.plaidOn=false;BANK=[];S.ackQ=[];S.bankErr='';persist();render();toast('Disconnected')}catch(e){toast(e.message.slice(0,90))}}
+async function bankUnlink(){if(!confirm('Disconnect the bank? You can reconnect later.'))return;try{await pcall({action:'unlink'});S.plaidOn=false;BANK=[];S.ackQ=[];S.bankErr='';S.acct=[];save();render();toast('Disconnected')}catch(e){toast(e.message.slice(0,90))}}
 function bkAdd(i,c){const x=BANK[i];if(!x)return;S.spend.push({id:uid(),t:x.name,a:Math.round(x.amount*100)/100,d:x.date,c:CATS[c][0],src:'bank',bid:x.id});(S.catMem=S.catMem||{})[x.name.toLowerCase()]=c;BANK.splice(i,1);S.ackQ=(S.ackQ||[]).concat(x.id);save();render();toast(weekLeft());bankFlush()}
 function bkSkip(i){const x=BANK[i];if(!x)return;BANK.splice(i,1);S.ackQ=(S.ackQ||[]).concat(x.id);persist();render();bankFlush()}
 function bankUI(){if(!AU)return'';
