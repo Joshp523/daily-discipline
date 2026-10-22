@@ -93,11 +93,12 @@ function spend(){
  const caps=S.caps||[0,90,40],exp=S.budget*(new Date().getDay()+1)/7,pace=tot<=exp?'On pace · '+money(exp-tot)+' of slack today':money(tot-exp)+' ahead of pace';const cn={};S.spend.forEach(x=>{const k=x.t.toLowerCase();cn[k]=(cn[k]||0)+1});const top=Object.keys(cn).filter(t=>!/['"]/.test(t)).sort((a,b)=>cn[b]-cn[a]).slice(0,5).map(t=>`<button class="chip" onclick="document.getElementById('t').value='${esc(t)}';sugCat('${esc(t)}')">${esc(t)}</button>`).join('');
  const cats=CATS.map(([n,c],i)=>{const v=wk.filter(x=>x.c===n).reduce((s,x)=>s+x.a,0),cp=caps[i];return`<div class="item"><div class="row"><span><i class="dot" style="background:${c}"></i>${sn(n)}</span><span><b>${money(v)}</b>${i?` / <input class="kg" type="number" value="${cp}" onchange="S.caps=S.caps||[0,90,40];S.caps[${i}]=+this.value;save();render()">`:''}</span></div>${i?`<div class="bar ${v>cp?'over':''}" style="height:6px;margin:6px 0 0"><i style="width:${Math.min(100,v/cp*100)}%"></i></div>`:''}</div>`}).join('');
  const rec=[...S.spend].sort((x,y)=>y.d.localeCompare(x.d)).slice(0,15).map(x=>`<div class="item row"><span><b>${esc(x.t)}</b><br><span class="mu">${x.d} · ${sn(x.c)}</span></span><span>${money(x.a)}<button class="x" onclick="del('spend','${x.id}')">×</button></span></div>`).join('');
+ const bankCard=bankUI();
  return`${hero('hero-spend.jpg','960/809','Spending',null,.82,'b')}<div class="sub">Week ${a} – ${b} · Sun–Sat</div>
  <div class="card"><div class="mu">This week</div><div class="big">${money(tot)}</div><div class="bar ${rem<0?'over':''}"><i style="width:${Math.min(100,tot/S.budget*100)}%"></i></div><div class="row mu"><span>${rem>=0?money(rem)+' left':money(-rem)+' over'}</span><span>of ${money(S.budget)}</span></div><div class="mu">${pace}</div></div>
  <div class="card row"><div><div class="mu">Balance</div><div class="big">${money(S.start-all)}</div></div><div style="text-align:right"><div class="mu">Frivolous ratio</div><div class="big">${all?pc(fr/all):'0%'}</div></div></div>
  <div class="card"><b>Weekly category caps</b>${cats}</div>
- <div class="card"><b>Add expense</b><div class="chips">${top}</div><div class="f" style="margin-top:8px"><input id="t" class="w" placeholder="Description" oninput="sugCat(this.value)"><input id="a" type="number" step="0.01" inputmode="decimal" placeholder="Amount"><input id="d" type="date" value="${today}"><select id="c" class="w">${CATS.map(c=>`<option>${c[0]}</option>`).join('')}</select></div><button class="go" onclick="addSpend()">Add</button></div>
+ ${bankCard}<div class="card"><b>Add expense</b><div class="chips">${top}</div><div class="f" style="margin-top:8px"><input id="t" class="w" placeholder="Description" oninput="sugCat(this.value)"><input id="a" type="number" step="0.01" inputmode="decimal" placeholder="Amount"><input id="d" type="date" value="${today}"><select id="c" class="w">${CATS.map(c=>`<option>${c[0]}</option>`).join('')}</select></div><button class="go" onclick="addSpend()">Add</button></div>
  <div class="card"><b>Recent</b>${rec}</div>`}
 function addSpend(){const a=parseFloat(document.getElementById('a').value);if(!(a>0))return;S.spend.push({id:uid(),t:document.getElementById('t').value.trim()||'Expense',a,d:document.getElementById('d').value||today,c:document.getElementById('c').value});save();render();toast(weekLeft())}
 function sugCat(v){const x=[...S.spend].reverse().find(y=>y.t.toLowerCase()===v.toLowerCase());if(x)document.getElementById('c').value=x.c}
@@ -273,6 +274,30 @@ async function sync(){if(!AU||busy)return;busy=true;setSY('busy','Syncing…');
 async function signIn(){const em=document.getElementById('em').value.trim(),pw=document.getElementById('pw').value;if(!em||!pw)return toast('Enter email and password');setSY('busy','Signing in…');try{await auth({email:em,password:pw},'password');await sync();render();toast('Signed in ★')}catch(e){setSY('err',e.message);toast(e.message)}}
 function signOut(){AU=null;saveAU();S.sync=undefined;S.lastSyncAt=undefined;persist();setSY('off','Not signed in');render()}
 const cloudCard=()=>AU?`<div class="card"><b>Cloud backup</b><div class="mu" style="margin-top:6px">Signed in as ${esc(AU.em)}</div><div class="mu" style="margin:8px 0"><i class="dot sdot" style="background:${SYC[SY]}"></i><span id="ss">${esc(SYT)}</span></div><div class="f"><button class="go" onclick="sync()">Sync now</button><button class="go" style="background:var(--blue)" onclick="signOut()">Sign out</button></div></div>`:`<div class="card"><b>Cloud backup</b><div class="mu" style="margin:6px 0 8px">Sign in to back up and sync across devices.</div><input id="em" type="email" autocomplete="username" placeholder="Email" style="margin-bottom:8px"><input id="pw" type="password" autocomplete="current-password" placeholder="Password"><button class="go" onclick="signIn()">Sign in</button><div class="mu" id="ss" style="margin-top:8px">${esc(SYT)}</div></div>`;
+/* BANK (Plaid via Supabase function) */
+const PF=SB+'/functions/v1/plaid';let BANK=[],busyB=false;
+async function pcall(body){const t=await token();const r=await fetch(PF,{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'HTTP '+r.status);return j}
+const loadPlaid=()=>window.Plaid?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdn.plaid.com/link/v2/stable/link-initialize.js';s.onload=ok;s.onerror=()=>no(new Error('Could not load Plaid'));document.head.appendChild(s)});
+async function bankFlush(){if(!(S.ackQ||[]).length)return;try{await pcall({action:'ack',ids:S.ackQ});S.ackQ=[];persist()}catch(e){}}
+async function bankSync(silent){if(!AU||busyB)return;if(silent&&S.bankAt&&Date.now()-S.bankAt<6e5)return;busyB=true;
+ try{await bankFlush();const j=await pcall({action:'sync'});S.plaidOn=!!j.linked;BANK=(j.txns||[]).filter(x=>!(S.ackQ||[]).includes(x.id));S.bankAt=Date.now();S.bankErr='';persist();
+  if(S.tab==='spend'&&!/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))render();
+  if(!silent)toast(j.linked?(BANK.length?BANK.length+' to review':'Up to date'):'No bank connected')}
+ catch(e){if(e.message!=='off'){S.bankErr=e.message.slice(0,140);persist();if(!silent)toast(S.bankErr)}}
+ busyB=false}
+async function bankConnect(upd){if(!AU)return toast('Sign in first');
+ try{toast('Opening bank link…');await loadPlaid();const j=await pcall({action:'link_token',update:!!upd});
+  Plaid.create({token:j.link_token,onSuccess:async pt=>{try{if(!upd)await pcall({action:'exchange',public_token:pt});S.plaidOn=true;S.bankAt=0;S.bankErr='';persist();toast('Bank connected ★');await bankSync();render()}catch(e){toast(e.message.slice(0,90))}},onExit:err=>{if(err)toast((err.display_message||err.error_message||'Link closed').slice(0,90))}}).open()}
+ catch(e){toast(e.message.slice(0,90))}}
+async function bankUnlink(){if(!confirm('Disconnect the bank? You can reconnect later.'))return;try{await pcall({action:'unlink'});S.plaidOn=false;BANK=[];S.ackQ=[];S.bankErr='';persist();render();toast('Disconnected')}catch(e){toast(e.message.slice(0,90))}}
+function bkAdd(i,c){const x=BANK[i];if(!x)return;S.spend.push({id:uid(),t:x.name,a:Math.round(x.amount*100)/100,d:x.date,c:CATS[c][0]});BANK.splice(i,1);S.ackQ=(S.ackQ||[]).concat(x.id);save();render();toast(weekLeft());bankFlush()}
+function bkSkip(i){const x=BANK[i];if(!x)return;BANK.splice(i,1);S.ackQ=(S.ackQ||[]).concat(x.id);persist();render();bankFlush()}
+function bankUI(){if(!AU)return'';
+ if(!S.plaidOn)return`<div class="card"><b>Bank connection</b><div class="mu" style="margin:6px 0 4px">Pull your transactions in automatically. Set this up from a computer browser.</div>${S.bankErr?`<div class="mu" style="color:var(--bad)">${esc(S.bankErr)}</div>`:''}<button class="go" onclick="bankConnect()">Connect bank</button></div>`;
+ const sg=n=>{const k=String(n).toLowerCase(),x=[...S.spend].reverse().find(y=>y.t.toLowerCase()===k);return x?CATS.findIndex(c=>c[0]===x.c):-1};
+ const lg=x=>S.spend.some(y=>Math.abs(y.a-x.amount)<.005&&Math.abs((new Date(y.d)-new Date(x.date))/864e5)<=3);
+ const rows=BANK.map((x,i)=>{const s=sg(x.name);return`<div class="item"><div class="row"><span><b>${esc(x.name)}</b><br><span class="mu">${x.date}${lg(x)?' · looks already logged':''}</span></span><span>${money(+x.amount)}<button class="x" onclick="bkSkip(${i})">×</button></span></div><div class="chips" style="margin-top:6px">${['Unavoidable','Optional','Frivolous'].map((n,c)=>`<button class="chip ${s===c?'on':''}" onclick="bkAdd(${i},${c})">${n}</button>`).join('')}</div></div>`}).join('');
+ return`<div class="card"><div class="row"><b>Bank inbox</b><span><button class="chip" onclick="bankSync()">Sync</button> <button class="chip" onclick="bankConnect(true)">Reconnect</button></span></div>${S.bankErr?`<div class="mu" style="color:var(--bad);margin-top:6px">${esc(S.bankErr)}</div>`:''}${rows||'<div class="mu" style="margin-top:8px">All caught up</div>'}<div class="row" style="margin-top:10px"><span class="mu">${S.bankAt?'Updated '+new Date(S.bankAt).toTimeString().slice(0,5):''}</span><button class="chip" onclick="bankUnlink()">Disconnect</button></div></div>`}
 function todayV(){
  const e=S.food[today]||{},fa=S.faith[today]||{},fx=S.fx[today],h=new Date().getHours(),[a,b]=weekRange();
  const tot=S.spend.filter(x=>x.d>=a&&x.d<=b).reduce((s,x)=>s+x.a,0),exp=S.budget*(new Date().getDay()+1)/7;
@@ -293,8 +318,8 @@ function del(k,id){S[k]=S[k].filter(x=>x.id!==id);save();render()}
 function render(){autoFast();const y=scrollY;BGI=null;const html=(S.tab==='today'?'':hdr())+{today:todayV,spend,food,faith,fit}[S.tab]();document.getElementById('app').innerHTML=html;const bg=document.getElementById('bg');bg.style.backgroundImage=BGI?`url(${BGI[0]})`:'none';bg.style.aspectRatio=BGI?BGI[1]:'auto';bg.style.height=BGI?'':'0';bg.style.top=(BGI?BGI[3]:0)+'px';const ht=document.querySelector('.ht');if(ht&&BGI){const top=ht.getBoundingClientRect().top+scrollY;ht.style.height=Math.max(64,BGI[2]*bg.offsetHeight+BGI[3]-top-12)+'px'}
  document.getElementById('nav').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${S.tab===k?'on':''}" onclick="S.tab='${k}';save();render();scrollTo(0,0)"><span>${ICON[k]}</span>${v[1]}</button>`).join('');scrollTo(0,y)}
 render();
-if(AU)sync();
-document.addEventListener('visibilitychange',()=>{if(AU&&!document.hidden)sync()});window.addEventListener('online',()=>{if(AU)sync()});
+if(AU)sync();if(AU)bankSync(true);
+document.addEventListener('visibilitychange',()=>{if(AU&&!document.hidden){sync();bankSync(true)}});window.addEventListener('online',()=>{if(AU)sync()});
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 try{if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js')}catch(e){}
 </script></body></html>
