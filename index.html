@@ -35,7 +35,7 @@ button.go{width:100%;padding:13px;border:0;border-radius:8px;background:var(--re
 .chart{display:flex;align-items:flex-end;gap:6px;margin-top:10px;position:relative}.chart div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;text-align:center;font-size:11px;line-height:15px;color:var(--mu)}.chart small{font-size:9px;line-height:12px}
 .chart span{display:block;background:var(--ac2)}.chart span.t,.chart span.ex{border-radius:3px 3px 0 0}.chart .ok span{background:var(--ok)}.chart .ok span.ex{background:#9bffbc}.chart .bad span{background:#8a2231}.chart .bad span.ex{background:var(--bad)}.chart .cur{opacity:.6}.gt{position:absolute;right:0;font:9px "Roboto Mono",monospace;font-style:normal;color:var(--bad)}
 .gl{position:absolute;left:0;right:0;border-top:1px dashed var(--red);pointer-events:none}
-nav{z-index:10;position:fixed;left:0;right:0;bottom:0;background:#0a0a0a;border-top:1px solid var(--ln);display:flex;padding:0 6px calc(6px + env(safe-area-inset-bottom,0px))}
+nav{z-index:10;position:fixed;left:0;right:0;bottom:0;background:#0a0a0a;border-top:1px solid var(--ln);display:flex;padding:0 6px max(8px,calc(env(safe-area-inset-bottom,0px) - 10px))}
 nav button{flex:1;background:none;border:0;color:var(--mu);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:8px 0 4px;box-shadow:inset 0 2px 0 transparent}nav button span{display:block}nav .ic{width:24px;height:24px;margin:0 auto 2px}
 nav button.on{color:#fff;font-weight:700;box-shadow:inset 0 2px 0 var(--red)}
 .dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px}
@@ -406,10 +406,11 @@ function wishCards(W,ownName,othName){
   +W(ownName+"'s list",`<div class="row" style="gap:8px;margin:10px 0 4px"><input id="wnew" placeholder="Add something you want" onkeydown="if(event.key==='Enter')wAdd()"><button class="go" style="width:auto;margin:0;padding:12px 18px" onclick="wAdd()">Add</button></div>`+(open.map(x=>wOwn(x,0)).join('')||empty)+tg('m',got.length)+(WSH.m?got.map(x=>wOwn(x,1)).join(''):''))}
 function wishIn(row){const m=(row&&row.data&&row.data.meishe&&row.data.meishe.wish)||[];if(JSON.stringify(m)!==JSON.stringify(S.wishM||[])){S.wishM=m;persist();if(S.tab==='wish'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName))render()}}
 function wish(){const W=(t,b)=>`<div class="card"><b>${esc(t)}</b>${b}</div>`;
- return`${hero('hero-wish.jpg','1000/778','Wish List','JOSH &amp; MEISHE',.96,'b')}<div class="sub">Edit your own list. Hers is view-only: tick an item when you buy it and it disappears from your view (she won't see that).</div>${wishCards(W,'Josh','Meishe')}`}
+ return`${hero('hero-wish.jpg','1000/948','Wish List','JOSH &amp; MEISHE',.97,'b')}<div class="sub">Edit your own list. Hers is view-only: tick an item when you buy it and it disappears from your view (she won't see that).</div>${wishCards(W,'Josh','Meishe')}`}
 function render(){autoFast();const y=scrollY;BGI=null;const html=(S.tab==='today'?'':hdr())+{today:todayV,spend,food,faith,fit,wish}[S.tab]();document.getElementById('app').innerHTML=html;const bg=document.getElementById('bg');bg.style.backgroundImage=BGI?`url(${BGI[0]})`:'none';bg.style.aspectRatio=BGI?BGI[1]:'auto';bg.style.height=BGI?'':'0';bg.style.top=(BGI?BGI[3]:0)+'px';const ht=document.querySelector('.ht');if(ht&&BGI){const top=ht.getBoundingClientRect().top+scrollY;ht.style.height=Math.max(64,BGI[2]*bg.offsetHeight+BGI[3]-top-12)+'px'}
  document.getElementById('nav').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${S.tab===k?'on':''}" onclick="S.tab='${k}';save();render();scrollTo(0,0)"><span>${ICON[k]}</span>${v[1]}</button>`).join('');scrollTo(0,y)}
 render();
+document.addEventListener('focusout',()=>setTimeout(()=>{if(!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){const y=scrollY;scrollTo(0,y+1);scrollTo(0,y)}},150));
 (AU?sync():Promise.resolve()).then(()=>save());if(AU)bankSync(true);
 document.addEventListener('visibilitychange',()=>{if(AU&&!document.hidden){sync().then(()=>save());bankSync(true)}});window.addEventListener('online',()=>{if(AU)sync()});
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
