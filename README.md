@@ -2,11 +2,6 @@
 
 A personal habit and money dashboard for a 54-day challenge, built as an installable phone app. One screen answers one question: *how did I do today?*
 
-<p align="center">
-  <img src="hero-today.jpg" alt="Today" width="49%">
-  <img src="hero-wish.jpg" alt="Wish List" width="49%">
-</p>
-
 ## Features
 
 | Page | What it does |
@@ -30,6 +25,10 @@ Also: cloud sync across devices, CSV export/import, offline use, and a household
   <tr>
     <td><img src="hero-faith.jpg" alt="Faith"><br><sub>Faith</sub></td>
     <td><img src="hero-fit.jpg" alt="Fitness"><br><sub>Fitness</sub></td>
+  </tr>
+  <tr>
+    <td><img src="hero-today.jpg" alt="Today"><br><sub>Today</sub></td>
+    <td><img src="hero-wish.jpg" alt="wish List"><br><sub>Wish List</sub></td>
   </tr>
 </table>
 
