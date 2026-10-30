@@ -55,13 +55,16 @@ nav button.on{color:#fff;font-weight:700;box-shadow:inset 0 2px 0 var(--red)}
 .ics{display:flex;justify-content:center;gap:1px}.cd .ic{width:15px;height:15px;margin:0!important;vertical-align:0}
 .g{color:var(--ok)}.r{color:var(--bad)}.bl{color:var(--ac)}
 button{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:2px}.big,.ovb{font-variant-numeric:tabular-nums}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.wl{text-decoration:none;display:inline-block;color:#fff;background:var(--blue);border-color:var(--ac);margin:0 2px}
+input.ck{width:22px;height:22px;min-width:22px;flex:0 0 22px;padding:0;accent-color:var(--ok)}
 </style></head>
 <body><div id="bg"></div><main id="app"></main>
 <nav id="nav"></nav>
 <script>
-const TABS={today:['★','Today'],spend:['★','Spending'],food:['★','Food'],faith:['★','Faith'],fit:['★','Fitness']};
+const TABS={today:['★','Today'],spend:['★','Spending'],food:['★','Food'],faith:['★','Faith'],fit:['★','Fitness'],wish:['★','Wishes']};
 const svg=p=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const ICON={today:svg('<polygon points="12,2.5 14.8,9 21.5,9.5 16.3,14 18,21 12,17.3 6,21 7.7,14 2.5,9.5 9.2,9" fill="currentColor"/>'),spend:svg('<circle cx="12" cy="12" r="9"/><path d="M14.6 9.2c-.5-1-1.5-1.6-2.7-1.6-1.5 0-2.5.8-2.5 2s1 1.7 2.7 2.1c1.7.4 2.7.9 2.7 2.1s-1 2-2.7 2c-1.3 0-2.4-.6-2.8-1.7M12 5.5v13"/>'),food:svg('<path d="M6 3v7a2 2 0 0 0 4 0V3M8 3v18M17 3c-2.2 1.2-3 4-3 7h3v11"/>'),faith:svg('<path d="M3 5c3-1.6 6-1.6 9 0 3-1.6 6-1.6 9 0v14c-3-1.6-6-1.6-9 0-3-1.6-6-1.6-9 0zM12 5v14"/>'),fit:svg('<path d="M6 6v12M3 9v6M18 6v12M21 9v6M6 12h12"/>'),run:svg('<path d="M5 6l6 6-6 6M13 6l6 6-6 6"/>'),rest:svg('<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>'),miss:svg('<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>')};
+ICON.wish=svg('<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M5 12v9h14v-9M7.5 8a2.5 2.5 0 1 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 1 1 0 5"/>');
 function flag(){let st='';for(let r=0;r<9;r++){const n=r%2?5:6;for(let k=0;k<n;k++){const cx=r%2?6.33*(2*k+2):6.33*(2*k+1),cy=5.4*(r+1);let p='';for(let i=0;i<10;i++){const a=Math.PI*i/5-Math.PI/2,q=i%2?0.75:1.9;p+=(cx+q*Math.cos(a)).toFixed(1)+','+(cy+q*Math.sin(a)).toFixed(1)+' '}st+=`<polygon points="${p}" fill="#fff"/>`}}
  let b='';for(let i=0;i<13;i++)b+=`<rect y="${(i*7.692).toFixed(2)}" width="190" height="7.7" fill="${i%2?'#f1f1f1':'var(--flagR)'}"/>`;
  return`<svg viewBox="0 0 190 100" preserveAspectRatio="xMidYMid slice">${b}<rect width="76" height="53.85" fill="var(--flagB)"/>${st}</svg>`}
@@ -303,16 +306,17 @@ const bk=()=>!!(AU&&S.lastSyncAt&&Date.now()-S.lastSyncAt<864e5);
 function setSY(st,msg){const was=bk();SY=st;SYT=msg||'';if(st==='ok'&&AU){S.lastSyncAt=Date.now();persist()}document.querySelectorAll('.sdot').forEach(d=>d.style.background=SYC[st]);const t=document.getElementById('ss');if(t)t.textContent=SYT;if(st==='ok'&&was!==bk()&&S.tab==='today')render()}
 /* true bank balance, shared with the household app through the snapshot row */
 const balObj=()=>{const A=S.acct||[];if(!A.length)return null;const av=a=>a.avail!=null?a.avail:(a.cur||0),cash=A.filter(a=>a.type==='depository').reduce((s,a)=>s+av(a),0),owed=A.filter(a=>a.type==='credit').reduce((s,a)=>s+(a.cur||0),0);return{net:Math.round((cash-owed)*100)/100,cash:Math.round(cash*100)/100,owed:Math.round(owed*100)/100,at:S.acctAt?new Date(S.acctAt).toISOString():null}};
-const payload=()=>({spend:S.spend,food:S.food,faith:S.faith,fx:S.fx,start:S.start,budget:S.budget,caps:S.caps,lastExp:S.lastExp,bal:balObj(),josh:{v:1,days:joshObj()}});
+const payload=()=>({spend:S.spend,food:S.food,faith:S.faith,fx:S.fx,start:S.start,budget:S.budget,caps:S.caps,lastExp:S.lastExp,bal:balObj(),josh:{v:1,days:joshObj()},wishJ:S.wish||[],wishJb:S.wishB||[]});
 const hs=str=>{let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h+str.charCodeAt(i))|0;return h};
 const pushSoon=()=>{if(!AU)return;clearTimeout(pt);pt=setTimeout(()=>sync(),4000)};
 async function auth(body,grant){const r=await fetch(SB+'/auth/v1/token?grant_type='+grant,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error_description||j.msg||'Sign-in failed');AU={at:j.access_token,rt:j.refresh_token,exp:Date.now()+j.expires_in*1000,uid:j.user.id,em:j.user.email};saveAU()}
 async function token(){if(!AU)throw new Error('off');if(AU.exp-30000<Date.now()){try{await auth({refresh_token:AU.rt},'refresh_token')}catch(e){AU=null;saveAU();setSY('off','Signed out — sign in again');throw new Error('off')}}return AU.at}
 async function sb(path,o={}){const t=await token();const r=await fetch(SB+'/rest/v1/'+path,{...o,headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...(o.headers||{})}});if(!r.ok){let m='';try{const j=await r.json();m=j.message||j.hint||j.error||JSON.stringify(j)}catch(e){}throw new Error('HTTP '+r.status+(m?' — '+m:''))}return r.json()}
 async function push(base){const h0=S.h;const r=await sb('snapshots?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({user_id:AU.uid,data:{...(base||{}),...payload()},updated_at:new Date().toISOString()})});S.sync=r[0].updated_at;S.dirty=S.h!==h0;persist();if(S.dirty)pushSoon();setSY('ok','Synced '+nowT())}
-function pull(row){const o=row.data;Object.assign(S,{spend:o.spend||[],food:o.food||{},faith:o.faith||{},fx:o.fx||{},start:o.start,budget:o.budget,caps:o.caps||[0,90,40],lastExp:o.lastExp});fmig();S.sync=row.updated_at;S.dirty=false;S.h=hs(JSON.stringify(payload()));persist();render();setSY('ok','Synced '+nowT());toast('Loaded cloud data ★')}
+function pull(row){const o=row.data;Object.assign(S,{spend:o.spend||[],food:o.food||{},faith:o.faith||{},fx:o.fx||{},start:o.start,budget:o.budget,caps:o.caps||[0,90,40],lastExp:o.lastExp,wish:o.wishJ||S.wish||[],wishB:o.wishJb||S.wishB||[]});fmig();S.sync=row.updated_at;S.dirty=false;S.h=hs(JSON.stringify(payload()));persist();render();setSY('ok','Synced '+nowT());toast('Loaded cloud data ★')}
 async function sync(){if(!AU||busy)return;busy=true;setSY('busy','Syncing…');
  try{const row=(await sb('snapshots?select=data,updated_at'))[0];
+  wishIn(row);
   if(!row)await push();
   else if(S.sync===row.updated_at){if(S.dirty)await push(row.data);else setSY('ok','Synced '+nowT())}
   else if(!S.dirty&&S.sync)pull(row);
@@ -378,7 +382,32 @@ function todayV(){
  ${row('Fitness',d=>{const q=fxs(d);return q==='done'||q==='rest'?true:q==='miss'?false:null})}${row('Food',d=>S.food[d]&&S.food[d].fh!=null?S.food[d].fh>=16:null)}${row('Faith',d=>S.faith[d]?dayPct(S.faith[d])>=.8:null)}${row('Spending',d=>S.spend.filter(x=>x.d===d).reduce((s,x)=>s+x.a,0)<=S.budget/7)}</div><div class="mu" style="margin-top:6px"><i class="dot" style="background:var(--ok)"></i>Goal met <i class="dot" style="background:var(--bad);margin-left:8px"></i>Missed <i class="dot" style="background:var(--ln);margin-left:8px"></i>No data</div></div>
  ${cloudCard()}${dataCard}`}
 function del(k,id){S[k]=S[k].filter(x=>x.id!==id);save();render()}
-function render(){autoFast();const y=scrollY;BGI=null;const html=(S.tab==='today'?'':hdr())+{today:todayV,spend,food,faith,fit}[S.tab]();document.getElementById('app').innerHTML=html;const bg=document.getElementById('bg');bg.style.backgroundImage=BGI?`url(${BGI[0]})`:'none';bg.style.aspectRatio=BGI?BGI[1]:'auto';bg.style.height=BGI?'':'0';bg.style.top=(BGI?BGI[3]:0)+'px';const ht=document.querySelector('.ht');if(ht&&BGI){const top=ht.getBoundingClientRect().top+scrollY;ht.style.height=Math.max(64,BGI[2]*bg.offsetHeight+BGI[3]-top-12)+'px'}
+const OK='wishM';
+/* WISH LIST: each person edits only their own list; the other list is view-only */
+let WE=null,WSH={};
+const wurl=u=>{u=String(u||'').trim();if(!u)return'';if(!/^[a-z][a-z0-9+.-]*:/i.test(u))u='https://'+u;try{const x=new URL(u);return/^https?:$/.test(x.protocol)?x.href:''}catch(e){return''}};
+const wBtn=u=>u?`<a class="chip wl" href="${esc(u)}" target="_blank" rel="noopener noreferrer">Open link</a>`:'';
+function wAdd(){const i=document.getElementById('wnew'),n=i.value.trim();if(!n)return;(S.wish=S.wish||[]).unshift({id:uid(),n,u:''});i.value='';save();render()}
+function wEdit(id){WE=id;render()}
+function wSave(id){const it=(S.wish||[]).find(x=>x.id===id);if(!it)return;const n=document.getElementById('wn').value.trim(),raw=document.getElementById('wu').value.trim(),u=wurl(raw);if(raw&&!u)return toast("That link doesn't look right");if(n)it.n=n;it.u=u;WE=null;save();render()}
+function wDel(id){S.wish=(S.wish||[]).filter(x=>x.id!==id);WE=null;save();render()}
+function wGot(id,on){const it=(S.wish||[]).find(x=>x.id===id);if(it){it.g=on?1:0;save();render();if(on)toast('Marked as purchased ★')}}
+function wBuy(id,on){const B=new Set(S.wishB||[]);on?B.add(id):B.delete(id);S.wishB=[...B];save();render();if(on)toast('Hidden from your view ★')}
+function wTog(k){WSH[k]=!WSH[k];render()}
+const wTxt=(t,d)=>`<span style="overflow-wrap:anywhere${d?';text-decoration:line-through;opacity:.55':''}">${esc(t)}</span>`;
+const wOwn=(it,d)=>WE===it.id?`<div class="item"><input id="wn" value="${esc(it.n)}" placeholder="Item name"><input id="wu" value="${esc(it.u)}" placeholder="Link (optional)" inputmode="url" autocapitalize="off" autocorrect="off" style="margin-top:6px"><div class="row" style="margin-top:8px"><button class="chip" onclick="wDel('${it.id}')">Delete</button><button class="chip on" onclick="wSave('${it.id}')">Save</button></div></div>`:`<div class="item row"><span style="display:flex;align-items:center;gap:10px;min-width:0"><input type="checkbox" class="ck" ${d?'checked':''} onchange="wGot('${it.id}',this.checked)">${wTxt(it.n,d)}</span><span style="white-space:nowrap;display:flex;align-items:center">${it.u?wBtn(it.u):`<button class="chip" onclick="wEdit('${it.id}')">+ Link</button>`}<button class="x" onclick="wEdit('${it.id}')">✎</button></span></div>`;
+const wOth=(it,d)=>`<div class="item row"><span style="display:flex;align-items:center;gap:10px;min-width:0"><input type="checkbox" class="ck" ${d?'checked':''} onchange="wBuy('${it.id}',this.checked)" title="I bought this">${wTxt(it.n,d)}</span><span style="white-space:nowrap">${wBtn(it.u)}</span></div>`;
+function wishCards(W,ownName,othName){
+ const mine=S.wish||[],open=mine.filter(x=>!x.g),got=mine.filter(x=>x.g);
+ const B=new Set(S.wishB||[]),oth=(S[OK]||[]).filter(x=>!x.g),vis=oth.filter(x=>!B.has(x.id)),bought=oth.filter(x=>B.has(x.id));
+ const tg=(k,n)=>n?`<div style="margin-top:10px"><button class="chip" onclick="wTog('${k}')">${WSH[k]?'Hide':'Show'} purchased (${n})</button></div>`:'';
+ const empty='<div class="mu" style="margin-top:8px">Nothing here yet</div>';
+ return W(othName+"'s list",(vis.map(x=>wOth(x,0)).join('')||empty)+tg('o',bought.length)+(WSH.o?bought.map(x=>wOth(x,1)).join(''):''))
+  +W(ownName+"'s list",`<div class="row" style="gap:8px;margin:10px 0 4px"><input id="wnew" placeholder="Add something you want" onkeydown="if(event.key==='Enter')wAdd()"><button class="go" style="width:auto;margin:0;padding:12px 18px" onclick="wAdd()">Add</button></div>`+(open.map(x=>wOwn(x,0)).join('')||empty)+tg('m',got.length)+(WSH.m?got.map(x=>wOwn(x,1)).join(''):''))}
+function wishIn(row){const m=(row&&row.data&&row.data.meishe&&row.data.meishe.wish)||[];if(JSON.stringify(m)!==JSON.stringify(S.wishM||[])){S.wishM=m;persist();if(S.tab==='wish'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName))render()}}
+function wish(){const W=(t,b)=>`<div class="card"><b>${esc(t)}</b>${b}</div>`;
+ return`${hero('hero-wish.jpg','1000/778','Wish List','JOSH &amp; MEISHE',.96,'b')}<div class="sub">Edit your own list. Hers is view-only: tick an item when you buy it and it disappears from your view (she won't see that).</div>${wishCards(W,'Josh','Meishe')}`}
+function render(){autoFast();const y=scrollY;BGI=null;const html=(S.tab==='today'?'':hdr())+{today:todayV,spend,food,faith,fit,wish}[S.tab]();document.getElementById('app').innerHTML=html;const bg=document.getElementById('bg');bg.style.backgroundImage=BGI?`url(${BGI[0]})`:'none';bg.style.aspectRatio=BGI?BGI[1]:'auto';bg.style.height=BGI?'':'0';bg.style.top=(BGI?BGI[3]:0)+'px';const ht=document.querySelector('.ht');if(ht&&BGI){const top=ht.getBoundingClientRect().top+scrollY;ht.style.height=Math.max(64,BGI[2]*bg.offsetHeight+BGI[3]-top-12)+'px'}
  document.getElementById('nav').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${S.tab===k?'on':''}" onclick="S.tab='${k}';save();render();scrollTo(0,0)"><span>${ICON[k]}</span>${v[1]}</button>`).join('');scrollTo(0,y)}
 render();
 (AU?sync():Promise.resolve()).then(()=>save());if(AU)bankSync(true);
