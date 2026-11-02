@@ -86,7 +86,8 @@ function seed(){const S={tab:'spend',spend:[],food:{},faith:{},fit:[],start:3590
  FA.split(';').forEach(r=>{const p=r.split('|');S.faith[p[0]]={pers:+p[1],comp:+p[2],lang:+p[3],gtr:+p[4],up:+p[5],dis:+p[6],n:p[7]}});return S}
 let S=seed();
 try{const r=localStorage.getItem('habits2');if(r)S=JSON.parse(r)}catch(e){}
-const persist=()=>{try{localStorage.setItem('habits2',JSON.stringify(S))}catch(e){}};
+try{const k=JSON.parse(localStorage.getItem('dd_wish_bk')||'null');if(k){S.wish=wMerge(S.wish,k.w);S.wishB=bMerge(S.wishB,k.b)}}catch(e){}
+const persist=()=>{try{localStorage.setItem('habits2',JSON.stringify(S))}catch(e){}try{const k=JSON.parse(localStorage.getItem('dd_wish_bk')||'{}');localStorage.setItem('dd_wish_bk',JSON.stringify({w:wMerge(k.w,S.wish),b:bMerge(k.b,S.wishB)}))}catch(e){}};
 const save=()=>{const h=hs(JSON.stringify(payload()));if(h!==S.h){S.h=h;S.dirty=true;pushSoon()}persist()};
 const days7=()=>{const a=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);a.push(iso(d))}return a};
 const dl=d=>'SMTWTFS'[new Date(d+'T12:00').getDay()];
@@ -291,7 +292,7 @@ function fromCSV(text){const o={tab:'today',spend:[],food:{},faith:{},fx:{},caps
   else if(t==='food'||t==='faith'){(o[t][d]=o[t][d]||{})[f]=cv(f,v)}
   else if(t==='fx'){const x=(o.fx[d]=o.fx[d]||{ex:[]}),m=/^ex\.(\d+)\.(\w+)$/.exec(f);if(m){const e=(x.ex[+m[1]]=x.ex[+m[1]]||{});e[m[2]]=m[2]==='s'?v.split('|').map(y=>y===''?null:+y):cv(m[2],v)}else x[f]=cv(f,v)}});
  o.spend=Object.keys(sp).sort((a,b)=>a-b).map(k=>sp[k]);return o}
-function importData(t){t=t.trim();try{const o=t[0]==='{'?JSON.parse(t):fromCSV(t);if(!o.spend||!o.fx||!o.food||!o.faith)throw 0;if(!confirm('Replace ALL current data with this import?'))return;const ps0=S.sync,la=S.lastSyncAt;S=o;S.sync=ps0;S.lastSyncAt=la;S.fd=today;S.tab='today';S.caps=S.caps||[0,90,40];S.lastExp=S.lastExp||today;fmig();save();render();toast('Imported ★')}catch(e){toast('Not a valid CSV or backup')}}
+function importData(t){t=t.trim();try{const o=t[0]==='{'?JSON.parse(t):fromCSV(t);if(!o.spend||!o.fx||!o.food||!o.faith)throw 0;if(!confirm('Replace ALL current data with this import?'))return;const ps0=S.sync,la=S.lastSyncAt,w0=S.wish,wb0=S.wishB;S=o;S.wish=w0;S.wishB=wb0;S.sync=ps0;S.lastSyncAt=la;S.fd=today;S.tab='today';S.caps=S.caps||[0,90,40];S.lastExp=S.lastExp||today;fmig();save();render();toast('Imported ★')}catch(e){toast('Not a valid CSV or backup')}}
 function csvOut(){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+toCSV()],{type:'text/csv'}));a.download='daily-discipline-'+today+'.csv';document.body.appendChild(a);a.click();a.remove();S.lastExp=today;save();render();toast('CSV exported ★')}catch(e){toast('Download blocked — use Copy CSV')}}
 function csvCopy(){try{navigator.clipboard.writeText(toCSV());toast('CSV copied')}catch(e){toast('Copy failed')}}
 function csvFile(inp){const f=inp.files[0];if(!f)return;const r=new FileReader();r.onload=()=>importData(r.result);r.readAsText(f);inp.value=''}
@@ -312,8 +313,8 @@ const pushSoon=()=>{if(!AU)return;clearTimeout(pt);pt=setTimeout(()=>sync(),4000
 async function auth(body,grant){const r=await fetch(SB+'/auth/v1/token?grant_type='+grant,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error_description||j.msg||'Sign-in failed');AU={at:j.access_token,rt:j.refresh_token,exp:Date.now()+j.expires_in*1000,uid:j.user.id,em:j.user.email};saveAU()}
 async function token(){if(!AU)throw new Error('off');if(AU.exp-30000<Date.now()){try{await auth({refresh_token:AU.rt},'refresh_token')}catch(e){AU=null;saveAU();setSY('off','Signed out — sign in again');throw new Error('off')}}return AU.at}
 async function sb(path,o={}){const t=await token();const r=await fetch(SB+'/rest/v1/'+path,{...o,headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...(o.headers||{})}});if(!r.ok){let m='';try{const j=await r.json();m=j.message||j.hint||j.error||JSON.stringify(j)}catch(e){}throw new Error('HTTP '+r.status+(m?' — '+m:''))}return r.json()}
-async function push(base){const h0=S.h;const r=await sb('snapshots?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({user_id:AU.uid,data:{...(base||{}),...payload()},updated_at:new Date().toISOString()})});S.sync=r[0].updated_at;S.dirty=S.h!==h0;persist();if(S.dirty)pushSoon();setSY('ok','Synced '+nowT())}
-function pull(row){const o=row.data;Object.assign(S,{spend:o.spend||[],food:o.food||{},faith:o.faith||{},fx:o.fx||{},start:o.start,budget:o.budget,caps:o.caps||[0,90,40],lastExp:o.lastExp,wish:o.wishJ||S.wish||[],wishB:o.wishJb||S.wishB||[]});fmig();S.sync=row.updated_at;S.dirty=false;S.h=hs(JSON.stringify(payload()));persist();render();setSY('ok','Synced '+nowT());toast('Loaded cloud data ★')}
+async function push(base){const h0=S.h;if(base){S.wish=wMerge(S.wish,base.wishJ);S.wishB=bMerge(S.wishB,base.wishJb)}const r=await sb('snapshots?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({user_id:AU.uid,data:{...(base||{}),...payload()},updated_at:new Date().toISOString()})});S.sync=r[0].updated_at;S.dirty=S.h!==h0;persist();if(S.dirty)pushSoon();setSY('ok','Synced '+nowT())}
+function pull(row){const o=row.data;Object.assign(S,{spend:o.spend||[],food:o.food||{},faith:o.faith||{},fx:o.fx||{},start:o.start,budget:o.budget,caps:o.caps||[0,90,40],lastExp:o.lastExp,wish:wMerge(S.wish,o.wishJ),wishB:bMerge(S.wishB,o.wishJb)});fmig();S.sync=row.updated_at;S.dirty=false;S.h=hs(JSON.stringify(payload()));persist();render();setSY('ok','Synced '+nowT());toast('Loaded cloud data ★')}
 async function sync(){if(!AU||busy)return;busy=true;setSY('busy','Syncing…');
  try{const row=(await sb('snapshots?select=data,updated_at'))[0];
   wishIn(row);
@@ -322,7 +323,7 @@ async function sync(){if(!AU||busy)return;busy=true;setSY('busy','Syncing…');
   else if(!S.dirty&&S.sync)pull(row);
   else{if(confirm('Cloud data already exists'+(S.sync?' (changed on another device) and this device has unsynced changes':'')+'.\n\nOK = load the cloud data here (replaces this device).\nCancel = overwrite the cloud with this device.'))pull(row);else await push(row.data)}
  }catch(e){if(e.message!=='off')setSY('err',(/Failed to fetch|NetworkError|Load failed/.test(e.message)?'No connection: ':'Error: ')+e.message.slice(0,180))}
- busy=false}
+ busy=false;if(S.wfix){S.wfix=false;S.dirty=true;pushSoon()}}
 async function signIn(){const em=document.getElementById('em').value.trim(),pw=document.getElementById('pw').value;if(!em||!pw)return toast('Enter email and password');setSY('busy','Signing in…');try{await auth({email:em,password:pw},'password');await sync();render();toast('Signed in ★')}catch(e){setSY('err',e.message);toast(e.message)}}
 function signOut(){AU=null;saveAU();S.sync=undefined;S.lastSyncAt=undefined;persist();setSY('off','Not signed in');render()}
 const cloudCard=()=>AU?`<div class="card"><b>Cloud backup</b><div class="mu" style="margin-top:6px">Signed in as ${esc(AU.em)}</div><div class="mu" style="margin:8px 0"><i class="dot sdot" style="background:${SYC[SY]}"></i><span id="ss">${esc(SYT)}</span></div><div class="f"><button class="go" onclick="sync()">Sync now</button><button class="go" style="background:var(--blue)" onclick="signOut()">Sign out</button></div></div>`:`<div class="card"><b>Cloud backup</b><div class="mu" style="margin:6px 0 8px">Sign in to back up and sync across devices.</div><input id="em" type="email" autocomplete="username" placeholder="Email" style="margin-bottom:8px"><input id="pw" type="password" autocomplete="current-password" placeholder="Password"><button class="go" onclick="signIn()">Sign in</button><div class="mu" id="ss" style="margin-top:8px">${esc(SYT)}</div></div>`;
@@ -384,27 +385,37 @@ function todayV(){
 function del(k,id){S[k]=S[k].filter(x=>x.id!==id);save();render()}
 const OK='wishM';
 /* WISH LIST: each person edits only their own list; the other list is view-only */
+function wMerge(a,b){const m=new Map();[...(a||[]),...(b||[])].forEach(it=>{if(!it||!it.id)return;const o=m.get(it.id);if(!o||(it.t||0)>(o.t||0))m.set(it.id,it)});return[...m.values()].sort((x,y)=>(y.c||0)-(x.c||0))}
+function bMerge(a,b){const m=new Map();[...(a||[]),...(b||[])].map(x=>typeof x==='string'?{i:x,on:1,t:0}:x).forEach(x=>{if(!x||!x.i)return;const o=m.get(x.i);if(!o||(x.t||0)>=(o.t||0))m.set(x.i,x)});return[...m.values()]}
+function bSet(){return new Set(bMerge(S.wishB,[]).filter(x=>x.on).map(x=>x.i))}
+function wSig(l){return JSON.stringify((l||[]).filter(x=>x&&x.id).map(x=>[x.id,x.t||0,x.x||0,x.g||0,x.n||'',x.u||'']).sort())}
+function bSig(l){return JSON.stringify(bMerge(l,[]).map(x=>[x.i,x.on?1:0,x.t||0]).sort())}
 let WE=null,WSH={};
 const wurl=u=>{u=String(u||'').trim();if(!u)return'';if(!/^[a-z][a-z0-9+.-]*:/i.test(u))u='https://'+u;try{const x=new URL(u);return/^https?:$/.test(x.protocol)?x.href:''}catch(e){return''}};
 const wBtn=u=>u?`<a class="chip wl" href="${esc(u)}" target="_blank" rel="noopener noreferrer">Open link</a>`:'';
-function wAdd(){const i=document.getElementById('wnew'),n=i.value.trim();if(!n)return;(S.wish=S.wish||[]).unshift({id:uid(),n,u:''});i.value='';save();render()}
+function wAdd(){const i=document.getElementById('wnew'),n=i.value.trim();if(!n)return;(S.wish=S.wish||[]).unshift({id:uid(),n,u:'',c:Date.now(),t:Date.now()});i.value='';save();render()}
 function wEdit(id){WE=id;render()}
-function wSave(id){const it=(S.wish||[]).find(x=>x.id===id);if(!it)return;const n=document.getElementById('wn').value.trim(),raw=document.getElementById('wu').value.trim(),u=wurl(raw);if(raw&&!u)return toast("That link doesn't look right");if(n)it.n=n;it.u=u;WE=null;save();render()}
-function wDel(id){S.wish=(S.wish||[]).filter(x=>x.id!==id);WE=null;save();render()}
-function wGot(id,on){const it=(S.wish||[]).find(x=>x.id===id);if(it){it.g=on?1:0;save();render();if(on)toast('Marked as purchased ★')}}
-function wBuy(id,on){const B=new Set(S.wishB||[]);on?B.add(id):B.delete(id);S.wishB=[...B];save();render();if(on)toast('Hidden from your view ★')}
+function wSave(id){const it=(S.wish||[]).find(x=>x.id===id);if(!it)return;const n=document.getElementById('wn').value.trim(),raw=document.getElementById('wu').value.trim(),u=wurl(raw);if(raw&&!u)return toast("That link doesn't look right");if(n)it.n=n;it.u=u;it.t=Date.now();WE=null;save();render()}
+function wDel(id){const it=(S.wish||[]).find(x=>x.id===id);if(it){it.x=1;it.t=Date.now()}WE=null;save();render()}
+function wGot(id,on){const it=(S.wish||[]).find(x=>x.id===id);if(it){it.g=on?1:0;it.t=Date.now();save();render();if(on)toast('Marked as purchased ★')}}
+function wBuy(id,on){S.wishB=bMerge(S.wishB,[{i:id,on:on?1:0,t:Date.now()}]);save();render();if(on)toast('Hidden from your view ★')}
 function wTog(k){WSH[k]=!WSH[k];render()}
 const wTxt=(t,d)=>`<span style="overflow-wrap:anywhere${d?';text-decoration:line-through;opacity:.55':''}">${esc(t)}</span>`;
 const wOwn=(it,d)=>WE===it.id?`<div class="item"><input id="wn" value="${esc(it.n)}" placeholder="Item name"><input id="wu" value="${esc(it.u)}" placeholder="Link (optional)" inputmode="url" autocapitalize="off" autocorrect="off" style="margin-top:6px"><div class="row" style="margin-top:8px"><button class="chip" onclick="wDel('${it.id}')">Delete</button><button class="chip on" onclick="wSave('${it.id}')">Save</button></div></div>`:`<div class="item row"><span style="display:flex;align-items:center;gap:10px;min-width:0"><input type="checkbox" class="ck" ${d?'checked':''} onchange="wGot('${it.id}',this.checked)">${wTxt(it.n,d)}</span><span style="white-space:nowrap;display:flex;align-items:center">${it.u?wBtn(it.u):`<button class="chip" onclick="wEdit('${it.id}')">+ Link</button>`}<button class="x" onclick="wEdit('${it.id}')">✎</button></span></div>`;
 const wOth=(it,d)=>`<div class="item row"><span style="display:flex;align-items:center;gap:10px;min-width:0"><input type="checkbox" class="ck" ${d?'checked':''} onchange="wBuy('${it.id}',this.checked)" title="I bought this">${wTxt(it.n,d)}</span><span style="white-space:nowrap">${wBtn(it.u)}</span></div>`;
 function wishCards(W,ownName,othName){
- const mine=S.wish||[],open=mine.filter(x=>!x.g),got=mine.filter(x=>x.g);
- const B=new Set(S.wishB||[]),oth=(S[OK]||[]).filter(x=>!x.g),vis=oth.filter(x=>!B.has(x.id)),bought=oth.filter(x=>B.has(x.id));
+ const mine=(S.wish||[]).filter(x=>!x.x),open=mine.filter(x=>!x.g),got=mine.filter(x=>x.g);
+ const B=bSet(),oth=(S[OK]||[]).filter(x=>!x.g&&!x.x),vis=oth.filter(x=>!B.has(x.id)),bought=oth.filter(x=>B.has(x.id));
  const tg=(k,n)=>n?`<div style="margin-top:10px"><button class="chip" onclick="wTog('${k}')">${WSH[k]?'Hide':'Show'} purchased (${n})</button></div>`:'';
  const empty='<div class="mu" style="margin-top:8px">Nothing here yet</div>';
  return W(othName+"'s list",(vis.map(x=>wOth(x,0)).join('')||empty)+tg('o',bought.length)+(WSH.o?bought.map(x=>wOth(x,1)).join(''):''))
   +W(ownName+"'s list",`<div class="row" style="gap:8px;margin:10px 0 4px"><input id="wnew" placeholder="Add something you want" onkeydown="if(event.key==='Enter')wAdd()"><button class="go" style="width:auto;margin:0;padding:12px 18px" onclick="wAdd()">Add</button></div>`+(open.map(x=>wOwn(x,0)).join('')||empty)+tg('m',got.length)+(WSH.m?got.map(x=>wOwn(x,1)).join(''):''))}
-function wishIn(row){const m=(row&&row.data&&row.data.meishe&&row.data.meishe.wish)||[];if(JSON.stringify(m)!==JSON.stringify(S.wishM||[])){S.wishM=m;persist();if(S.tab==='wish'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName))render()}}
+function wishIn(row){const d=(row&&row.data)||{},m=(d.meishe&&d.meishe.wish)||[];let ch=false;
+ if(JSON.stringify(m)!==JSON.stringify(S.wishM||[])){S.wishM=m;ch=true}
+ if(row){const mw=wMerge(S.wish,d.wishJ),mb=bMerge(S.wishB,d.wishJb);
+  if(wSig(mw)!==wSig(S.wish)){S.wish=mw;ch=true}if(bSig(mb)!==bSig(S.wishB)){S.wishB=mb;ch=true}
+  if(wSig(mw)!==wSig(d.wishJ)||bSig(mb)!==bSig(d.wishJb))S.wfix=true}
+ if(ch){persist();if(S.tab==='wish'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName))render()}}
 function wish(){const W=(t,b)=>`<div class="card"><b>${esc(t)}</b>${b}</div>`;
  return`${hero('hero-wish.jpg','1000/948','Wish List','JOSH &amp; MEISHE',.97,'b')}<div class="sub">Edit your own list. Hers is view-only: tick an item when you buy it and it disappears from your view (she won't see that).</div>${wishCards(W,'Josh','Meishe')}`}
 function render(){autoFast();const y=scrollY;BGI=null;const html=(S.tab==='today'?'':hdr())+{today:todayV,spend,food,faith,fit,wish}[S.tab]();document.getElementById('app').innerHTML=html;const bg=document.getElementById('bg');bg.style.backgroundImage=BGI?`url(${BGI[0]})`:'none';bg.style.aspectRatio=BGI?BGI[1]:'auto';bg.style.height=BGI?'':'0';bg.style.top=(BGI?BGI[3]:0)+'px';const ht=document.querySelector('.ht');if(ht&&BGI){const top=ht.getBoundingClientRect().top+scrollY;ht.style.height=Math.max(64,BGI[2]*bg.offsetHeight+BGI[3]-top-12)+'px'}
