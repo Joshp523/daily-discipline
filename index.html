@@ -30,6 +30,8 @@ input[type=date],input[type=time]{-webkit-appearance:none;appearance:none;displa
 input[type=date]:not(.kg),input[type=time]:not(.kg){min-height:46px}
 input::-webkit-date-and-time-value{text-align:left;min-height:1.3em}
 .f>*{min-width:0}
+.daybar{display:flex;gap:8px;align-items:center;margin:0 0 12px}.daybar input{flex:1;min-width:0}.daybar .chip{min-width:44px;min-height:44px;font-size:16px}.daybar .chip:disabled{opacity:.35}
+.ql{display:inline-block;margin:6px 6px 0 0;text-decoration:none;font-size:11px}
 .f{display:grid;grid-template-columns:1fr 1fr;gap:8px}.f .w{grid-column:1/3}
 button.go{width:100%;padding:13px;border:0;border-radius:8px;background:var(--red);color:#fff;font:700 15px "Roboto Condensed",sans-serif;letter-spacing:.12em;text-transform:uppercase;margin-top:8px}
 .chart{display:flex;align-items:flex-end;gap:6px;margin-top:10px;position:relative}.chart div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;text-align:center;font-size:11px;line-height:15px;color:var(--mu)}.chart small{font-size:9px;line-height:12px}
@@ -93,9 +95,15 @@ const days7=()=>{const a=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d
 const dl=d=>'SMTWTFS'[new Date(d+'T12:00').getDay()];
 function chart(vals,mx,goal,fmt,labels,cls){const H=72,L=labels||days7().map(dl),g=goal/mx*H+15;
  return`<div class="chart" style="height:${H+30}px">${goal?`<i class="gl" style="bottom:${g}px"></i><em class="gt" style="bottom:${g+2}px">${fmt(goal)}</em>`:''}`+vals.map((v,i)=>{const b=Math.min(v,goal||0)/mx*H,x=Math.max(0,Math.min(v,mx)-(goal||0))/mx*H,c=cls?cls(v,i):(goal&&v>=goal?'ok':'');return`<div class="${c}"><small>${v?fmt(v):''}</small>${x>0?`<span class="ex" style="height:${x}px"></span>`:''}<span class="${x>0?'':'t'}" style="height:${v>0?Math.max(2,b):0}px"></span>${L[i]}</div>`}).join('')+'</div>'}
-function setV(k,f,v){const e=(S[k][today]=S[k][today]||{}),b=k==='faith'?dayPct(e):0;e[f]=v;if(k==='faith'&&f!=='wk'&&v&&!e.wk&&!e.rise&&new Date().getHours()<12)e.wk=nowT();if(k==='food'&&['b','l','d'].includes(f)&&v&&!e[f+'t'])e[f+'t']=nowT();save();render();if(k==='faith'&&b<.8&&dayPct(e)>=.8){let n=0;for(const d of days7().reverse()){if(dayPct(S.faith[d])>=.8)n++;else break}toast('Target hit! '+n+'-day streak ★')}}
+/* VD = the day being edited on Food and Faith (today unless you pick an earlier day) */
+let VD=today;const DK=k=>k==='food'||k==='faith'?VD:today;
+const dlab=d=>d===today?'Today':d===ydate(today)?'Yesterday':new Date(d+'T12:00').toLocaleDateString([],{weekday:'short',month:'short',day:'numeric'});
+function setVD(d){if(!d||d>today)d=today;VD=d;render()}
+function shiftVD(n){const z=new Date(VD+'T12:00');z.setDate(z.getDate()+n);setVD(iso(z))}
+const dayBar=()=>`<div class="daybar"><button class="chip" onclick="shiftVD(-1)" aria-label="Previous day">‹</button><input type="date" value="${VD}" max="${today}" onchange="setVD(this.value)" aria-label="Day to edit"><button class="chip" onclick="shiftVD(1)" ${VD>=today?'disabled':''} aria-label="Next day">›</button>${VD!==today?'<button class="chip on" onclick="setVD(today)">Today</button>':''}</div>`;
+function setV(k,f,v){const dd=DK(k),e=(S[k][dd]=S[k][dd]||{}),b=k==='faith'?dayPct(e):0;e[f]=v;if(dd===today&&k==='faith'&&f!=='wk'&&v&&!e.wk&&!e.rise&&new Date().getHours()<12)e.wk=nowT();if(dd===today&&k==='food'&&['b','l','d'].includes(f)&&v&&!e[f+'t'])e[f+'t']=nowT();save();render();if(k==='faith'&&b<.8&&dayPct(e)>=.8){let n=0;for(const d of days7().reverse()){if(dayPct(S.faith[d])>=.8)n++;else break}toast('Target hit! '+n+'-day streak ★')}}
 function setN(k,f,v){setV(k,f,v===''?undefined:+v)}
-const num=(k,f,ph,step)=>`<input type="number" inputmode="decimal" step="${step||1}" placeholder="${ph}" value="${esc((S[k][today]||{})[f])}" onchange="setN('${k}','${f}',this.value)">`;
+const num=(k,f,ph,step)=>`<input type="number" inputmode="decimal" step="${step||1}" placeholder="${ph}" value="${esc((S[k][DK(k)]||{})[f])}" onchange="setN('${k}','${f}',this.value)">`;
 /* SPENDING */
 function weekRange(){const d=new Date();d.setDate(d.getDate()-d.getDay());const e=new Date(d);e.setDate(d.getDate()+6);return[iso(d),iso(e)]}
 function spend(){
@@ -131,36 +139,36 @@ function food(){
  const fast=E.filter(([d,e])=>e.fh>=16).length,snf=E.filter(([d,e])=>e.sn===false).length;
  const meals=E.flatMap(([d,e])=>[e.bx?0:e.bs,e.lx?0:e.ls,e.dx?0:e.ds]).filter(Boolean),cnt=s=>meals.filter(m=>m===s).length;
  const avg=E.reduce((s,[d,e])=>s+e.fh,0)/n,sat=meals.length?cnt('Satisfied')/meals.length:0;
- const score=(fast/n+snf/n+sat)/3;const e=S.food[today]||{};
+ const score=(fast/n+snf/n+sat)/3;const e=S.food[VD]||{};
  const m=(l,f,sf)=>{const x=e[f+'x'];return`<div class="item"><div class="row"><span class="mu">${l}</span><span><button class="chip ${x?'on':''}" onclick="setV('food','${f}x',${!x})">${x?'✓ Skipped':'Skip'}</button>${x?'':` <input type="time" class="kg" style="width:112px!important" value="${esc(e[f+'t'])}" onchange="setV('food','${f}t',this.value)">`}</span></div>${x?'<div class="mu">Skipped — not counted in satiety or fast timing</div>':`<input placeholder="What did you eat?" value="${esc(e[f])}" onchange="setV('food','${f}',this.value)" style="margin:4px 0"><select onchange="setV('food','${sf}',this.value)"><option value="">Satiety…</option>${SAT.map(y=>`<option ${e[sf]===y?'selected':''}>${y}</option>`).join('')}</select>`}</div>`};
  const D=days7();const hrs=D.map(d=>(S.food[d]||{}).fh||0);
- const past=E.reverse().filter(([d])=>d!==today).slice(0,6).map(([d,x])=>`<div class="item"><div class="row"><b>${d}</b><span class="mu">${x.fh}h fast · ${x.sn===true?'snacked':x.sn===false?'no snacks':'–'}</span></div><div class="mu">${[x.b,x.l,x.d].filter(Boolean).map(esc).join(' · ')}</div></div>`).join('');
+ const past=E.reverse().filter(([d])=>d!==today).slice(0,6).map(([d,x])=>`<div class="item" style="cursor:pointer" onclick="setVD('${d}');scrollTo(0,0)"><div class="row"><b>${d} <span class="mu">· edit</span></b><span class="mu">${x.fh}h fast · ${x.sn===true?'snacked':x.sn===false?'no snacks':'–'}</span></div><div class="mu">${[x.b,x.l,x.d].filter(Boolean).map(esc).join(' · ')}</div></div>`).join('');
  return`${hero('hero-food.jpg','960/842','Food',null,.95,'b')}<div class="sub">Deficit & satiety sprint · Oct 9 – Dec 1 · 16:8 goal</div>
  <div class="card"><div class="mu">Deficit habit score (target 80%)</div><div class="big">${pc(score)}</div><div class="bar"><i style="width:${score*100}%"></i></div>
  <div class="f mu" style="margin-top:8px"><span>Fasting goal met: <b>${pc(fast/n)}</b></span><span>Snack-free days: <b>${snf}</b></span><span>Avg fast: <b>${avg.toFixed(1)}h</b></span><span>Optimal satiety: <b>${pc(sat)}</b></span></div></div>
  <div class="card"><b>Fasting hours, last 7 days</b><div class="mu">Goal 16h</div>${chart(hrs,24,16,v=>Math.round(v*10)/10+'h')}</div><div class="card"><b>Bodyweight trend (lbs)</b><div class="mu">Is the deficit working?</div>${spark(Object.keys(S.fx).sort().filter(d=>S.fx[d].bw).map(d=>S.fx[d].bw),v=>v)}</div>
- <div class="card"><div class="row"><b>Today · ${today}</b><button class="chip" onclick="foodCopy()">Same meals as yesterday</button></div>
+ <div class="card">${dayBar()}<div class="row"><b>${dlab(VD)} · ${VD}</b><button class="chip" onclick="foodCopy()">Same meals as day before</button></div>
  <div class="mu" id="lf" style="margin:8px 0">${liveText()}</div>
- <div class="item row"><span class="mu">Yesterday's last meal</span><input type="time" class="kg" style="width:112px!important" value="${esc(lastT(ydate(today)))}" onchange="yT(this.value)"></div>
+ <div class="item row"><span class="mu">Day before's last meal</span><input type="time" class="kg" style="width:112px!important" value="${esc(lastT(ydate(VD)))}" onchange="yT(this.value)"></div>
  ${m('Breakfast','b','bs')}${m('Lunch','l','ls')}${m('Dinner','d','ds')}
  <div class="item"><div class="mu">After dinner</div><select onchange="setV('food','sn',this.value===''?undefined:this.value==='1')" style="margin-top:4px"><option value="">Snacked between meals?</option><option value="1" ${e.sn===true?'selected':''}>Snacked</option><option value="0" ${e.sn===false?'selected':''}>No snacks</option></select></div>
  <div class="item row"><span class="mu">Fast (hrs) · auto from meal times</span><input type="number" step="0.1" inputmode="decimal" class="kg" placeholder="auto" value="${e.fh==null?'':e.fh}" onchange="fhManual(this.value)"></div></div>
  <div class="card"><b>Satiety cues</b>${SAT.map(s=>`<div class="item row"><span>${s}</span><b>${cnt(s)} · ${meals.length?pc(cnt(s)/meals.length):'0%'}</b></div>`).join('')}</div>
  <div class="card"><b>Recent days</b>${past}</div>`}
-function foodCopy(){const p=Object.keys(S.food).filter(d=>d<today&&(S.food[d].b||S.food[d].l||S.food[d].d)).sort().pop();if(!p)return toast('No earlier meals');const e=(S.food[today]=S.food[today]||{}),y=S.food[p];e.b=y.b;e.l=y.l;e.d=y.d;save();render();toast('Copied from '+p)}
+function foodCopy(){const p=Object.keys(S.food).filter(d=>d<VD&&(S.food[d].b||S.food[d].l||S.food[d].d)).sort().pop();if(!p)return toast('No earlier meals');const e=(S.food[VD]=S.food[VD]||{}),y=S.food[p];e.b=y.b;e.l=y.l;e.d=y.d;save();render();toast('Copied from '+p)}
 const nowT=()=>{const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
 const tm=(d,t)=>new Date(d+'T'+t),ydate=d=>iso(new Date(new Date(d+'T12:00').getTime()-864e5));
 const lastT=d=>{const e=S.food[d];return e&&((e.dx?'':e.dt)||(e.lx?'':e.lt)||(e.bx?'':e.bt))||''},firstT=d=>{const e=S.food[d];return e&&((e.bx?'':e.bt)||(e.lx?'':e.lt)||(e.dx?'':e.dt))||''};
 const hm=h=>{let m=Math.round(h*60);return Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m'};
 function autoFast(){Object.keys(S.food).forEach(d=>{const e=S.food[d];if(e.fm)return;const p=lastT(ydate(d)),f=firstT(d);if(p&&f){const h=(tm(d,f)-tm(ydate(d),p))/36e5;if(h>0&&h<48)e.fh=Math.round(h*10)/10}})}
-function liveText(){const e=S.food[today]||{},p=lastT(ydate(today));
+function liveText(){if(VD!==today){const x=S.food[VD]||{};return x.fh!=null?'Fast that day: '+x.fh+'h '+(x.fh>=16?'✓ goal met':'(goal 16h)'):'Enter the meal times to work out that day’s fast'}const e=S.food[today]||{},p=lastT(ydate(today));
  if(e.dt&&!e.dx)return'Fasting since dinner · '+hm((Date.now()-tm(today,e.dt))/36e5)+' · goal 16h';
  if(e.fh!=null&&firstT(today))return'Last fast: '+e.fh+'h '+(e.fh>=16?'✓ goal met':'(goal 16h)');
  if(p){const h=(Date.now()-tm(ydate(today),p))/36e5;return'Fasting '+hm(h)+(h>=16?' · goal reached ✓':' · '+hm(16-h)+' to go')}
  return"Enter yesterday's last meal time to start the fasting clock"}
 setInterval(()=>{const el=document.getElementById('lf');if(el)el.textContent=liveText()},30000);
-function yT(v){const y=ydate(today);(S.food[y]=S.food[y]||{}).dt=v;save();render()}
-function fhManual(v){const e=(S.food[today]=S.food[today]||{});e.fm=v!=='';e.fh=v===''?undefined:+v;save();render()}
+function yT(v){const y=ydate(VD);(S.food[y]=S.food[y]||{}).dt=v;save();render()}
+function fhManual(v){const e=(S.food[VD]=S.food[VD]||{});e.fm=v!=='';e.fh=v===''?undefined:+v;save();render()}
 /* FAITH */
 const H=[['rise','Arise 6:30 AM','w'],['ret','Retire 10:30 PM','c'],['plan','Daily planning','c'],['jrn','Journaling','c'],['pers','Personal study','m',30],['comp','Companion study','c'],['fs','Family scripture','c'],['fp','Family prayer','c'],['skill','Skills','s',30]];
 const CORE=['rise','fs','fp'],wt=h=>CORE.includes(h[0])?2:1,WT=H.reduce((s,h)=>s+wt(h),0);
@@ -177,17 +185,18 @@ const pts=e=>{e=e||{};return H.reduce((s,h)=>s+hp(e,h),0)+wakeBonus(e)+mdPts(e)}
 const dayPct=e=>Math.max(0,Math.min(1,pts(e)/WT));
 
 function faith(){
- const F=S.faith,keys=Object.keys(F);const e=F[today]||{};
+ const F=S.faith,keys=Object.keys(F);const e=F[VD]||{};
  const logged=h=>keys.filter(d=>hd(F[d],h)).length,sum=f=>keys.reduce((s,d)=>s+(+F[d][f]||0),0);
  const el=Math.min(54,Math.max(1,Math.round((new Date(today)-new Date('2026-10-05'))/864e5)+1)),tot=keys.reduce((s,d)=>s+dayPct(F[d]),0),adh=tot/el,adhF=tot/54;
  const chips=H.filter(h=>h[2]==='c').map(h=>`<button class="chip ${e[h[0]]?'on':''}" onclick="setV('faith','${h[0]}',${!e[h[0]]})">${e[h[0]]?'✓ ':''}${h[1]}</button>`).join('');
- const cell=(f,l)=>`<div><div class="mu">${l}</div>${num('faith',f,'0')}</div>`;
- const mins=`<div><div class="mu">Arise</div><input type="time" value="${esc(e.wk)}" onchange="setV('faith','wk',this.value)"></div>`+cell('pers','Personal study (min)')+cell('gtr','Guitar (min)')+cell('lang','Language (min)')+cell('dis','Slop (min)')+cell('up','Art (min)');
+ const cell=(f,l,x)=>`<div><div class="mu">${l}</div>${num('faith',f,'0')}${x||''}</div>`;
+ const ql=(u,t)=>`<a class="chip ql" href="${u}"${u.startsWith('http')?' target="_blank" rel="noopener"':''}>${t} ↗</a>`;
+ const mins=`<div><div class="mu">Arise</div><input type="time" value="${esc(e.wk)}" onchange="setV('faith','wk',this.value)"></div>`+cell('pers','Personal study (min)',ql('gospellibrary://','Gospel Library'))+cell('gtr','Guitar (min)')+cell('lang','Language (min)',ql('https://apps.apple.com/app/id1573114703','AnyLang')+ql('https://joshp523.github.io/russian/','Глаголы'))+cell('dis','Slop (min)')+cell('up','Art (min)');
  const bars=H.map(h=>{const l=logged(h);return`<div class="item"><div class="row"><span>${h[1]}</span><span class="mu">${l}/${el}</span></div><div class="bar" style="margin:6px 0 0;height:6px"><i style="width:${Math.min(100,l/el*100)}%"></i></div></div>`}).join('');
   const D=days7();
- return`${hero('hero-faith.jpg','620/457','Faith &amp; Discipleship',null,.955,'b')}<div class="sub">“Arise early, that your bodies and your minds may be invigorated.” — D&C 88:124</div>
- <div class="card"><div class="mu">Today</div><div class="big">${pc(dayPct(e))}</div><div class="bar"><i style="width:${dayPct(e)*100}%"></i></div>${chart(D.map(d=>dayPct(F[d])),1,.8,v=>Math.round(v*100)+'%')}</div>
- <div class="card"><b>Check off today</b><div class="chips">${chips}</div><div class="f" style="margin-top:12px">${mins}</div><input placeholder="Media topics / notes" value="${esc(e.n)}" onchange="setV('faith','n',this.value)" style="margin-top:8px"></div>
+ return`${hero('hero-faith.jpg','578/419','Faith &amp; Discipleship',null,.955,'b')}<div class="sub">“Arise early, that your bodies and your minds may be invigorated.” — D&C 88:124</div>
+ <div class="card"><div class="mu">${dlab(VD)}</div><div class="big">${pc(dayPct(e))}</div><div class="bar"><i style="width:${dayPct(e)*100}%"></i></div>${chart(D.map(d=>dayPct(F[d])),1,.8,v=>Math.round(v*100)+'%')}</div>
+ <div class="card">${dayBar()}<b>Check off ${VD===today?'today':dlab(VD)}</b><div class="chips">${chips}</div><div class="f" style="margin-top:12px">${mins}</div><input placeholder="Media topics / notes" value="${esc(e.n)}" onchange="setV('faith','n',this.value)" style="margin-top:8px"></div>
  <div class="card"><b>54-day challenge</b><div class="f mu" style="margin-top:8px"><span>Since start <b>${(adh*100).toFixed(0)}%</b></span><span>Full 54 days <b>${(adhF*100).toFixed(0)}%</b></span><span>Scripture <b>${((sum('pers')+keys.reduce((s,d)=>s+(typeof F[d].comp==='number'?F[d].comp:0),0))/60).toFixed(1)}h</b></span><span>Skills <b>${((sum('lang')+sum('gtr'))/60).toFixed(1)}h</b></span><span>Art <b>${(sum('up')/60).toFixed(1)}h</b></span><span>Slop <b>${(sum('dis')/60).toFixed(1)}h</b></span></div></div>
  <div class="card"><b>Habits</b>${bars}</div>`}
 /* FITNESS */
@@ -274,7 +283,7 @@ function fit(){
  <div class="card"><b>Lift progress</b><div class="mu">Heaviest completed weight</div>${lifts}</div>
  <div class="card"><b>Recent sessions</b>${recent}</div>`}
 /* TODAY */
-const go=t=>{S.tab=t;save();render();scrollTo(0,0)};
+const go=t=>{S.tab=t;VD=today;save();render();scrollTo(0,0)};
 const NUMK=new Set(['fh','pers','comp','lang','gtr','up','dis','bw','tgt','mi','kg','a']),BOOLK=new Set(['sn','fm','bx','lx','dx','rise','ret','plan','jrn','fs','fp','run','rest']);
 const cv=(k,v)=>k==='comp'?(v==='true'?true:v==='false'?false:(+v||0)):BOOLK.has(k)?v==='true':NUMK.has(k)?(v===''?undefined:+v):v;
 const qc=v=>{v=String(v);return/[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
@@ -419,7 +428,7 @@ function wishIn(row){const d=(row&&row.data)||{},m=(d.meishe&&d.meishe.wish)||[]
 function wish(){const W=(t,b)=>`<div class="card"><b>${esc(t)}</b>${b}</div>`;
  return`${hero('hero-wish.jpg','1000/948','Wish List','JOSH &amp; MEISHE',.97,'b')}<div class="sub">Edit your own list. Hers is view-only: tick an item when you buy it and it disappears from your view (she won't see that).</div>${wishCards(W,'Josh','Meishe')}`}
 function render(){autoFast();const y=scrollY;BGI=null;const html=(S.tab==='today'?'':hdr())+{today:todayV,spend,food,faith,fit,wish}[S.tab]();document.getElementById('app').innerHTML=html;const bg=document.getElementById('bg');bg.style.backgroundImage=BGI?`url(${BGI[0]})`:'none';bg.style.aspectRatio=BGI?BGI[1]:'auto';bg.style.height=BGI?'':'0';bg.style.top=(BGI?BGI[3]:0)+'px';const ht=document.querySelector('.ht');if(ht&&BGI){const top=ht.getBoundingClientRect().top+scrollY;ht.style.height=Math.max(64,BGI[2]*bg.offsetHeight+BGI[3]-top-12)+'px'}
- document.getElementById('nav').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${S.tab===k?'on':''}" onclick="S.tab='${k}';save();render();scrollTo(0,0)"><span>${ICON[k]}</span>${v[1]}</button>`).join('');scrollTo(0,y)}
+ document.getElementById('nav').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${S.tab===k?'on':''}" onclick="S.tab='${k}';VD=today;save();render();scrollTo(0,0)"><span>${ICON[k]}</span>${v[1]}</button>`).join('');scrollTo(0,y)}
 render();
 document.addEventListener('focusout',()=>setTimeout(()=>{if(!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){const y=scrollY;scrollTo(0,y+1);scrollTo(0,y)}},150));
 (AU?sync():Promise.resolve()).then(()=>save());if(AU)bankSync(true);
