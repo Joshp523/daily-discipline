@@ -191,7 +191,7 @@ function faith(){
  const chips=H.filter(h=>h[2]==='c').map(h=>`<button class="chip ${e[h[0]]?'on':''}" onclick="setV('faith','${h[0]}',${!e[h[0]]})">${e[h[0]]?'✓ ':''}${h[1]}</button>`).join('');
  const cell=(f,l,x)=>`<div><div class="mu">${l}</div>${num('faith',f,'0')}${x||''}</div>`;
  const ql=(u,t)=>`<a class="chip ql" href="${u}"${u.startsWith('http')?' target="_blank" rel="noopener"':''}>${t} ↗</a>`;
- const mins=`<div><div class="mu">Arise</div><input type="time" value="${esc(e.wk)}" onchange="setV('faith','wk',this.value)"></div>`+cell('pers','Personal study (min)',ql('gospellibrary://','Gospel Library'))+cell('gtr','Guitar (min)')+cell('lang','Language (min)',ql('https://apps.apple.com/app/id1573114703','AnyLang')+ql('https://joshp523.github.io/russian/','Глаголы'))+cell('dis','Slop (min)')+cell('up','Art (min)');
+ const mins=`<div><div class="mu">Arise</div><input type="time" value="${esc(e.wk)}" onchange="setV('faith','wk',this.value)"></div>`+cell('pers','Personal study (min)',ql('gospellibrary://','Gospel Library'))+cell('gtr','Guitar (min)')+cell('lang','Language (min)',ql('anylang://','AnyLang')+ql('Глаголы://','Глаголы'))+cell('dis','Slop (min)')+cell('up','Art (min)');
  const bars=H.map(h=>{const l=logged(h);return`<div class="item"><div class="row"><span>${h[1]}</span><span class="mu">${l}/${el}</span></div><div class="bar" style="margin:6px 0 0;height:6px"><i style="width:${Math.min(100,l/el*100)}%"></i></div></div>`}).join('');
   const D=days7();
  return`${hero('hero-faith.jpg','578/419','Faith &amp; Discipleship',null,.955,'b')}<div class="sub">“Arise early, that your bodies and your minds may be invigorated.” — D&C 88:124</div>
