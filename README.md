@@ -1,68 +1,36 @@
-# Daily Discipline
+<p align="center"><img src="icon-192.png" width="110" alt=""></p>
 
-A personal habit and money dashboard for a 54-day challenge, built as an installable phone app. One screen answers one question: *how did I do today?*
+<h1 align="center">Habits: Josh (Daily Discipline)</h1>
+<p align="center"><em>One screen, one question: how did I do today?</em></p>
+<p align="center"><a href="https://joshp523.github.io/daily-discipline/"><b>▶ Open the app</b></a></p>
 
-## Features
+<p align="center"><img src="readme-showcase.jpg" alt="Habits: Josh (Daily Discipline) on a phone"></p>
 
-| Page | What it does |
-|---|---|
-| **Today** | Overall score for the day, last 7 and 30 days at a glance, and a "heads up" list of anything slipping |
-| **Spending** | Weekly budget and category caps, weekly spending vs. budget history, live bank balances, and a bank inbox where each transaction is categorized in one tap |
-| **Food** | 16:8 fasting tracker with a live fasting clock, meal log with satiety cues, bodyweight trend |
-| **Faith** | Weighted daily habit score (arise time, study, prayer, journaling, skills, and more), with a "slop vs. art" media balance |
-| **Fitness** | Weights, run, or both on the same day, set-by-set logging with a rest timer, lift progress and run pace charts |
-| **Wishes** | Shared wish lists: edit your own, view your partner's, tick off what you bought without spoiling the surprise |
+Daily Discipline is Josh's personal dashboard for a 54-day challenge. It pulls habits, money, food, faith and fitness into one daily score, with a bold black-and-white look inspired by historic photographs.
 
-Also: cloud sync across devices, CSV export/import, offline use, and a household app that reads a summary of today's score from the same database.
+## The pages
 
-## Gallery
+- **Today:** the day's score, the last 7 and 30 days, and a "heads up" list of anything slipping.
+- **Spending:** a weekly budget, category limits, live bank balances, and one-tap sorting of each transaction.
+- **Food:** a fasting clock, a meal log, and a weight trend.
+- **Faith:** a weighted daily habit score: rising early, study, prayer, journaling and more.
+- **Fitness:** weights or a run (or both), logged set by set with a rest timer and progress charts.
+- **Wishes:** shared wish lists. Tick off a gift without spoiling the surprise.
 
-<table>
-  <tr>
-    <td><img src="hero-spend.jpg" alt="Spending"><br><sub>Spending</sub></td>
-    <td><img src="hero-food.jpg" alt="Food"><br><sub>Food</sub></td>
-  </tr>
-  <tr>
-    <td><img src="hero-faith.jpg" alt="Faith"><br><sub>Faith</sub></td>
-    <td><img src="hero-fit.jpg" alt="Fitness"><br><sub>Fitness</sub></td>
-  </tr>
-  <tr>
-    <td><img src="hero-today.jpg" alt="Today"><br><sub>Today</sub></td>
-    <td><img src="hero-wish.jpg" alt="wish List"><br><sub>Wish List</sub></td>
-  </tr>
-</table>
+<table><tr><td align="center" valign="top"><img src="readme-screen-1.jpg" width="230" alt="Today"><br><sub>Today</sub></td><td align="center" valign="top"><img src="readme-screen-2.jpg" width="230" alt="Spending"><br><sub>Spending</sub></td><td align="center" valign="top"><img src="readme-screen-3.jpg" width="230" alt="Fitness"><br><sub>Fitness</sub></td></tr></table>
+## Why it's worth a look
 
-## Stack
+- **Cool:** Every page opens on a dramatic historical photo. It feels like a war room for your own life.
+- **Innovative:** Habits, money, food, faith and fitness roll up into a single honest number for the day.
+- **Impressive:** It connects to the bank, syncs across devices, works offline, and shares a summary with Meishe's app.
+- **Useful:** Instead of five different apps, one glance tells you what to fix before bedtime.
 
-- **Front end:** a single `index.html` of vanilla HTML, CSS and JavaScript. No framework and no build step.
-- **PWA:** service worker (`sw.js`) and web manifest for home-screen install and offline use.
-- **Storage:** `localStorage` on the device, synced to **Supabase** (Auth plus a JSON snapshot row).
-- **Bank data:** **Plaid** (Transactions) through a **Supabase Edge Function**. The Plaid secret and bank token live only on the server.
-- **Fonts:** Roboto, Roboto Condensed and Roboto Mono from Google Fonts.
+---
 
-## Files
+### On your phone
+Open the link in Safari (iPhone/iPad) or Chrome (Android), then choose **Share → Add to Home Screen**. It gets its own icon and opens full-screen, just like an app from the store.
 
-```
-index.html               the whole app
-sw.js                    offline cache
-manifest.webmanifest     install metadata
-hero-*.jpg               page background images
-plaid-function.ts        Supabase Edge Function (bank sync and balances)
-supabase-setup.sql       tables for the bank integration
-```
+### More apps by Josh Riley
+[The Riley Rag](https://joshp523.github.io/RileyRag/) · [QuipRash](https://joshp523.github.io/Quip-game-app/) · [Word Games](https://joshp523.github.io/Word-Games/) · [Russian Verbs](https://joshp523.github.io/russian/) · [Riley Rangers](https://joshp523.github.io/Rangers-app/) · [Habits: Meishe](https://joshp523.github.io/Habit-tracker-app-Meishe/) · [Habits: Grandma](https://joshp523.github.io/wendys-app/) · [Writing](https://joshp523.github.io/writing-app/)
 
-## Run it
-
-1. Serve the folder over HTTPS (GitHub Pages works) and open `index.html`.
-2. On iPhone: Safari, Share, **Add to Home Screen**.
-3. Optional sync and bank features: create a Supabase project, run `supabase-setup.sql`, deploy `plaid-function.ts` as an Edge Function named `plaid`, and add `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV` and `OWNER_USER_ID` as function secrets.
-
-## Security notes
-
-- Never commit Plaid keys or Supabase service keys. The publishable key in `index.html` is meant to be public, and access is controlled by Supabase row-level security.
-- The bank tables have row-level security on with no browser policies, so only the Edge Function can read them.
-- Use a strong, unique password for the Supabase login. It protects your bank data.
-
-## Credits
-
-Background photographs are public-domain or historical images used for personal, non-commercial purposes. Replace them with your own if you publish this.
+<sub>Built by Josh Riley. Setup notes for whoever maintains it are in [SETUP.md](SETUP.md).</sub>
