@@ -108,6 +108,21 @@ input.sm{width:96px}input.xs{width:76px}
 .wl{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--ac);color:var(--on-ac);text-decoration:none;font-size:12px;font-weight:600;margin:0 2px}
 input.ck{width:22px;height:22px;min-height:22px;min-width:22px;flex:0 0 22px;padding:0;accent-color:var(--ac)}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* guest board */
+body.guest #side,body.guest #bnav,body.guest #mtop{display:none!important}
+body.guest #app{max-width:1060px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 16px 40px}
+.ghd{text-align:center;margin:10px 0 22px}.ghd .brand{justify-content:center;margin-bottom:12px}.ghd h1{font:var(--fhw) clamp(28px,7vw,44px)/1.1 var(--fh);letter-spacing:var(--fhs);margin:0 0 8px}
+.ggrid{display:grid;gap:14px}@media(min-width:760px){.ggrid{grid-template-columns:1fr 1fr}}
+.gbig{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:baseline;margin-bottom:10px}.gbig b{font:700 28px/1.1 var(--fh)}.gbig span{color:var(--mu)}
+.gcal{display:grid;grid-template-columns:repeat(15,1fr);gap:5px;margin:4px 0 8px}.gd{display:inline-block;aspect-ratio:1;border-radius:50%;background:var(--none);min-width:10px}
+.gd.full{background:var(--ac)}.gd.min{background:var(--ac-mid)}.gd.miss{background:var(--warn-pale)}.gleg{font-size:12px;color:var(--mu);display:flex;gap:6px;align-items:center;flex-wrap:wrap}.gleg .gd{width:10px;height:10px;min-width:0}
+.gx{display:flex;justify-content:space-between;font-size:11px;color:var(--mu);margin:2px 0 8px}
+.grow{display:grid;grid-template-columns:44px 1fr auto;gap:8px;padding:7px 0;border-top:1px solid var(--ln2);font-size:14px}
+.gwk{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;margin:4px 0 8px}.gwk div{border:1px solid var(--ln);border-radius:10px;padding:6px 4px;text-align:center}.gwk b{display:block;font-size:20px}.gwk span{font-size:11px;color:var(--mu)}
+.gwk .ok b{color:var(--ac)}.gwk .bad b{color:var(--warn)}.gwk .now{border-style:dashed}
+.roast{margin:12px 0 0;padding:10px 12px;border-left:3px solid var(--warn);background:var(--warn-soft);border-radius:0 10px 10px 0;font-style:italic}.roast span{display:block;font-style:normal;font-size:12px;color:var(--mu);margin-top:4px}
+.gft{text-align:center;color:var(--mu);font-size:13px;margin:22px 0}.gft a{color:var(--ac);text-decoration:underline;cursor:pointer}
 </style></head>
 <body>
 <div id="shell"><nav id="side" aria-label="Main"></nav><main id="app"></main></div>
@@ -471,7 +486,7 @@ const pushSoon=()=>{if(!AU)return;clearTimeout(pt);pt=setTimeout(()=>sync(),4000
 async function auth(body,grant){const r=await fetch(SB+'/auth/v1/token?grant_type='+grant,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(body)});const j=await r.json();if(!r.ok)throw new Error(j.error_description||j.msg||'Sign-in failed');AU={at:j.access_token,rt:j.refresh_token,exp:Date.now()+j.expires_in*1000,uid:j.user.id,em:j.user.email};saveAU()}
 async function token(){if(!AU)throw new Error('off');if(AU.exp-30000<Date.now()){try{await auth({refresh_token:AU.rt},'refresh_token')}catch(e){AU=null;saveAU();setSY('off','Signed out — sign in again');throw new Error('off')}}return AU.at}
 async function sb(path,o={}){const t=await token();const r=await fetch(SB+'/rest/v1/'+path,{...o,headers:{apikey:KEY,Authorization:'Bearer '+t,'Content-Type':'application/json',...(o.headers||{})}});if(!r.ok){let m='';try{const j=await r.json();m=j.message||j.hint||j.error||JSON.stringify(j)}catch(e){}throw new Error('HTTP '+r.status+(m?' — '+m:''))}return r.json()}
-async function push(base){const h0=S.h;if(base){S.wish=wMerge(S.wish,base.wishJ);S.wishB=bMerge(S.wishB,base.wishJb)}const r=await sb('snapshots?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({user_id:AU.uid,data:{...(base||{}),...payload()},updated_at:new Date().toISOString()})});S.sync=r[0].updated_at;S.dirty=S.h!==h0;persist();if(S.dirty)pushSoon();setSY('ok','Synced '+nowT())}
+async function push(base){const h0=S.h;if(base){S.wish=wMerge(S.wish,base.wishJ);S.wishB=bMerge(S.wishB,base.wishJb)}const r=await sb('snapshots?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({user_id:AU.uid,data:{...(base||{}),...payload()},updated_at:new Date().toISOString()})});S.sync=r[0].updated_at;S.dirty=S.h!==h0;persist();if(S.dirty)pushSoon();setSY('ok','Synced '+nowT());publishGuest()}
 function pull(row){const o=row.data;Object.assign(S,{spend:o.spend||[],food:o.food||{},faith:o.faith||{},fx:o.fx||{},start:o.start,budget:o.budget||200,caps:o.caps||[0,90,40],lastExp:o.lastExp,netLog:Object.assign({},S.netLog,o.netLog||{}),glide:o.glide||S.glide,ifthen:o.ifthen||S.ifthen,week:o.week||S.week,theme:o.theme||S.theme,wish:wMerge(S.wish,o.wishJ),wishB:bMerge(S.wishB,o.wishJb)});fmig();S.sync=row.updated_at;S.dirty=false;S.h=hs(JSON.stringify(payload()));persist();render();setSY('ok','Synced '+nowT());toast('Loaded cloud data ★')}
 async function sync(){if(!AU||busy)return;busy=true;setSY('busy','Syncing…');
  try{const row=(await sb('snapshots?select=data,updated_at'))[0];wishIn(row);
@@ -481,7 +496,7 @@ async function sync(){if(!AU||busy)return;busy=true;setSY('busy','Syncing…');
   else{if(confirm('Cloud data already exists'+(S.sync?' (changed on another device) and this device has unsynced changes':'')+'.\n\nOK = load the cloud data here (replaces this device).\nCancel = overwrite the cloud with this device.'))pull(row);else await push(row.data)}
  }catch(e){if(e.message!=='off')setSY('err',(/Failed to fetch|NetworkError|Load failed/.test(e.message)?'No connection: ':'Error: ')+e.message.slice(0,180))}
  busy=false;if(S.wfix){S.wfix=false;S.dirty=true;pushSoon()}}
-async function signIn(){const em=$('em').value.trim(),pw=$('pw').value;if(!em||!pw)return toast('Enter email and password');setSY('busy','Signing in…');try{await auth({email:em,password:pw},'password');await sync();render();toast('Signed in ★')}catch(e){setSY('err',e.message);toast(e.message)}}
+async function signIn(){const em=$('em').value.trim(),pw=$('pw').value;if(!em||!pw)return toast('Enter email and password');setSY('busy','Signing in…');try{await auth({email:em,password:pw},'password');try{localStorage.setItem('dd_owner','1')}catch(e){}document.body.classList.remove('guest');await sync();publishGuest();render();toast('Signed in ★')}catch(e){setSY('err',e.message);toast(e.message)}}
 function signOut(){AU=null;saveAU();S.sync=undefined;S.lastSyncAt=undefined;persist();setSY('off','Not signed in');render()}
 const cloudCard=()=>AU?card('Cloud backup',`<div class="mu">Signed in as ${esc(AU.em)}</div><div class="mu" style="margin:8px 0"><i class="sdot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${SYC[SY]};margin-right:6px"></i><span class="sst">${esc(SYT)}</span></div><div class="f2"><button class="go ac" onclick="sync()">Sync now</button><button class="go" onclick="signOut()">Sign out</button></div>`):card('Cloud backup',`<div class="mu" style="margin-bottom:8px">Sign in to back up and sync across devices.</div><input id="em" type="email" autocomplete="username" placeholder="Email" style="width:100%;margin-bottom:8px"><input id="pw" type="password" autocomplete="current-password" placeholder="Password" style="width:100%"><button class="go ac w" style="margin-top:8px" onclick="signIn()">Sign in</button><div class="mu sst" style="margin-top:8px">${esc(SYT)}</div>`);
 
@@ -547,9 +562,79 @@ function wishV(){const mine=(S.wish||[]).filter(x=>!x.x),open=mine.filter(x=>!x.
  const empty='<div class="mu" style="margin-top:8px">Nothing here yet</div>';
  return hero('wish','Josh &amp; Meishe','Wish lists.','Edit your own list. Hers is view-only: tick an item when you buy it and it disappears from your view (she won’t see that).','','Jeep, 1940s')+`<div class="cols"><div class="c1">${card("Meishe's list",(vis.map(x=>wOth(x,0)).join('')||empty)+tg('o',bought.length)+(WSH.o?bought.map(x=>wOth(x,1)).join(''):''))}</div><div class="c1">${card("Josh's list",`<div class="row" style="gap:8px;margin:4px 0 8px"><input id="wnew" placeholder="Add something you want" onkeydown="if(event.key==='Enter')wAdd()" style="flex:1"><button class="go ac" onclick="wAdd()">Add</button></div>`+(open.map(x=>wOwn(x,0)).join('')||empty)+tg('m',got.length)+(WSH.m?got.map(x=>wOwn(x,1)).join(''):''))}</div></div>`}
 
+
+/* ---------- GUEST MODE: the public accountability board ----------
+   Anyone who isn't signed in sees this instead of the app: charts of workouts, consistency, sleep, run pace,
+   bodyweight, and whether the weekly budget held. It reads a summary the app publishes on every sync
+   (table dd_public, readable by anyone). No money amounts, no bank details: only under/over budget. */
+const GUEST_ID='josh';
+function guestObj(){const o={v:1,at:new Date().toISOString(),days:{},weeks:[],chain:chain(),bstreak:budgetStreak()};
+ for(let i=0;i<120;i++){const d=addD(today,-i);if(d<'2026-09-20')break;const x=S.fx[d]||{},di=dayInfo(d),k=planFor(d);
+  const sets=(x.ex||[]).reduce((a,e)=>a+(e.s||[]).filter(v=>v!=null&&v!=='').length,0),mi=+x.mi||0,dm=mins(x.dur||''),h=sleepH(d);
+  const e={c:di.c,k:di.kept?1:0,up:riseHit(d)?1:0};
+  if(trained(x))e.w=sName(k,d)||'Workout';if(sets)e.sets=sets;if(mi>0)e.mi=Math.round(mi*100)/100;if(mi>0&&dm)e.pace=Math.round(dm/mi*100)/100;
+  if(x.bw)e.bw=+x.bw;if(h)e.h=Math.round(h*10)/10;if(x.rest)e.rest=1;o.days[d]=e}
+ for(let i=0;i<12;i++){const ws=addD(wkStart(today),-7*i);if(!S.spend.some(x=>x.d>=ws&&x.d<=addD(ws,6))&&i>0)continue;o.weeks.push({ws,under:weekSpent(ws).total<=S.budget?1:0,now:i===0?1:0})}
+ return o}
+async function publishGuest(){if(!AU)return;try{await sb('dd_public?on_conflict=id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({id:GUEST_ID,data:guestObj(),updated_at:new Date().toISOString()})}).catch(()=>{})}catch(e){}}
+const isGuest=()=>!AU&&localStorage.getItem('dd_owner')!=='1';
+function iAmJosh(){try{localStorage.setItem('dd_owner','1')}catch(e){}document.body.classList.remove('guest');S.tab='settings';render()}
+// Self-roasts, written by me, about me. Picked by how I'm doing; the line changes day to day.
+const ROAST={
+ streak:[[0,["Streak: zero. I have the follow-through of a wet paper towel.","Zero days in a row. Even my houseplant is more consistent, and it's plastic.","Currently on a streak of absolutely nothing. Please clap."]],
+  [3,["A few days in a row. Don't get excited; I won't.","Small streak. Like a toddler stacking blocks, it could fall at any moment.","It's a streak! A tiny, fragile, pathetic streak."]],
+  [10,["Double-digit streak. Who is this man and what did he do with the lard?","Ten-plus days. I'm as surprised as you are.","Okay, this streak is real. Somebody check on me."]],
+  [30,["A month-long streak. I'm basically a monk now. A slightly chubby monk.","Thirty days. I've become insufferable about it, I know.","This streak is so long I'm afraid to break it. Fear works."]]],
+ work:[[0,["Zero workouts this week. The couch and I are in a committed relationship.","No workouts. My gym membership is a donation at this point.","I have lifted nothing heavier than a fork this week."]],
+  [2,["A couple of workouts. Barely enough to justify the protein powder.","Two-ish sessions. The bare minimum, my specialty.","Some lifting happened. Not a lot. Some."]],
+  [4,["Four or more sessions this week. Fear me. Or at least don't laugh.","Actually training. My mirror is cautiously optimistic.","Lots of workouts this week. I may have mistaken the gym for my house."]]],
+ sleep:[[0,["Sleeping like a raccoon: late, poorly, and near snacks.","My sleep schedule is a crime scene.","Average sleep: not enough. Explains a lot about my decisions."]],
+  [6.5,["Decent sleep. Not great. Like a motel mattress.","Getting sleep-ish. My eye bags are filing for downsizing.","Respectable sleep. Don't tell anyone."]],
+  [7.5,["7.5+ hours a night. I'm basically a well-rested golden retriever.","Sleeping like an actual adult. Who knew.","Great sleep. Now if only I'd use the energy for something."]]],
+ pace:[[0,["No runs logged. I prefer to stay stationary, like a mighty boulder.","Running? I thought you said 'sunning'.","My running shoes are still in the box, looking at me with disappointment."]],
+  [1,["Running pace: somewhere between a jog and a waddle.","I run like I'm being chased by something slow.","Pace is improving! From 'glacier' to 'confused walrus'."]]],
+ bw:[[-99,["The scale is going down! Turns out you can't out-snack a calorie deficit, I've tried.","Losing weight. Slowly. Like a melting ice sculpture of a large man.","Down on the scale. The lard is retreating. For now."]],
+  [-0.3,["Weight holding steady. Steady like a sturdy, well-fed barn.","No change on the scale. I am a monument.","Flat line. Neither gaining nor losing, just existing majestically."]],
+  [0.3,["The scale went UP. I blame the scale. And the cookies.","Gaining. I'm not fat, I'm in a bulking era (I'm fat).","Up again. Apparently 'just one more slice' adds up."]]],
+ money:[[0,["Over budget. My wallet is crying and so am I.","I went over budget. Turns out 'treat yourself' isn't a financial plan.","Budget? Never heard of her."]],
+  [1,["Under budget this week. Frugal king. Cheap, some would say.","Stayed under budget. My bank account let out a small, surprised squeak.","Under budget! I survived on rice and smugness."]],
+  [4,["Weeks in a row under budget. I'm basically a squirrel hoarding acorns.","A whole run of under-budget weeks. My bank may finally stop sending worried emails.","Budget streak going strong. Accountants weep with joy."]]]};
+const pick=(set,v)=>{let L=set[0][1];for(const[t,l]of set)if(v>=t)L=l;const n=+today.replace(/-/g,'')+set.length;return L[n%L.length]};
+let GD=null,GERR='';
+async function guestLoad(){try{const r=await fetch(SB+'/rest/v1/dd_public?id=eq.'+GUEST_ID+'&select=data,updated_at',{headers:{apikey:KEY}});const j=await r.json();if(!r.ok)throw new Error(j.message||r.status);GD=j[0]?j[0].data:null;GERR=GD?'':'Nothing published yet.'}catch(e){GERR='Couldn’t load the board right now.'}if(isGuest())guestV()}
+function guestV(){document.body.classList.add('guest');today=iso(new Date());theme();document.title="Josh's Accountability Board";
+ const head=`<header class="ghd"><div class="brand" style="padding:0"><div class="logo">D</div>Daily Discipline</div><h1>Josh’s Accountability Board</h1><p class="mu2">This is my habit tracker. You’re here to keep me honest. Mock freely.</p></header>`;
+ if(!GD){$('app').innerHTML=head+card('',`<p class="mu">${GERR||'Loading…'}</p>`)+gFoot();return}
+ const D=GD.days||{},days=n=>{const a=[];for(let i=n-1;i>=0;i--)a.push(addD(today,-i));return a},get=d=>D[d]||null;
+ // consistency
+ const d30=days(30),kept=d30.filter(d=>(get(d)||{}).k).length,pct=Math.round(kept/30*100);
+ const cal=d30.map(d=>{const e=get(d);const st=!e?'none':e.c===4?'full':e.k?'min':'miss';return`<i class="gd ${st}" title="${d}"></i>`}).join('');
+ const cons=card('Consistency',`<div class="gbig"><b>${GD.chain||0}</b><span>day streak</span><b>${pct}%</b><span>of the last 30 days kept</span></div><div class="gcal">${cal}</div><div class="gleg"><i class="gd full"></i>all four habits <i class="gd min"></i>three <i class="gd miss"></i>missed</div>`+roast(pick(ROAST.streak,GD.chain||0)));
+ // workouts: per week, last 8 weeks
+ const wks=[...Array(8)].map((_,i)=>addD(wkStart(today),-7*(7-i))),wn=wks.map(ws=>[0,1,2,3,4,5,6].filter(k=>(get(addD(ws,k))||{}).w&&!/rest/i.test(get(addD(ws,k)).w)).length);
+ const recent=days(7).reverse().map(d=>{const e=get(d)||{};return`<div class="grow"><span>${DN[dow(d)]}</span><b>${e.w&&!/rest/i.test(e.w)?esc(e.w):e.rest||dow(d)===0?'Rest day':'—'}</b><span class="mu">${e.sets?e.sets+' sets':''}${e.mi?(e.sets?' · ':'')+e.mi+' mi':''}</span></div>`}).join('');
+ const thisWk=wn[wn.length-1];
+ const work=card('Workouts',`<div class="mu" style="margin-bottom:6px">Sessions per week, last 8 weeks</div>${barSvg(wn,{w:320,h:90,H:110,max:Math.max(5,...wn),col:v=>v>=4?'var(--ac)':v>=2?'var(--ac-mid)':'var(--warn-pale)',aria:'Workouts per week'})}<div class="gx"><span>8 weeks ago</span><span>this week</span></div>${recent}`+roast(pick(ROAST.work,thisWk)));
+ // sleep
+ const d21=days(21),hs=d21.map(d=>(get(d)||{}).h||null),hv=hs.filter(Boolean),avg=hv.length?hv.reduce((a,b)=>a+b,0)/hv.length:0,up=d21.filter(d=>(get(d)||{}).up).length;
+ const sleep=card('Sleep',`<div class="gbig"><b>${avg?avg.toFixed(1):'–'}</b><span>hours a night (3 weeks)</span><b>${up}/21</b><span>mornings up on time</span></div>${lineSvg(hs,{w:320,h:90,H:110,lo:5,hi:9.5,grid:[{v:6,l:'6h'},{v:8,l:'8h'}],refs:[{v:7.5}],dots:true,aria:'Hours of sleep'})}`+roast(pick(ROAST.sleep,avg)));
+ // pace
+ const runs=Object.keys(D).sort().filter(d=>D[d].pace).slice(-12),pv=runs.map(d=>D[d].pace),fmtP=p=>Math.floor(p)+':'+String(Math.round(p%1*60)).padStart(2,'0');
+ const pace=card('Running pace',runs.length?`<div class="gbig"><b>${fmtP(pv[pv.length-1])}</b><span>min/mile, last run</span><b>${fmtP(Math.min(...pv))}</b><span>best of the last ${runs.length}</span></div>${lineSvg(pv,{w:320,h:90,H:110,lo:Math.min(...pv)-.5,hi:Math.max(...pv)+.5,inv:true,dots:true,aria:'Pace per run'})}<div class="gx"><span>older</span><span>higher is faster</span><span>latest</span></div>`+roast(pick(ROAST.pace,1)):roast(pick(ROAST.pace,0)));
+ // bodyweight: 60 days, change = last 7-day avg vs the 7 days two weeks before
+ const d60=days(60),bw=d60.map(d=>(get(d)||{}).bw||null),bv=bw.filter(Boolean),av=a=>{const v=a.filter(Boolean);return v.length?v.reduce((x,y)=>x+y,0)/v.length:null};
+ const now7=av(days(7).map(d=>(get(d)||{}).bw)),then7=av(days(21).slice(0,7).map(d=>(get(d)||{}).bw)),ch=now7&&then7?now7-then7:null;
+ const body=card('Bodyweight',bv.length?`<div class="gbig"><b>${now7?now7.toFixed(1):bv[bv.length-1]}</b><span>lb, 7-day average</span><b>${ch==null?'–':(ch>0?'+':'')+ch.toFixed(1)}</b><span>lb vs two weeks ago</span></div>${lineSvg(bw,{w:320,h:90,H:110,lo:Math.min(...bv)-1,hi:Math.max(...bv)+1,dots:true,aria:'Bodyweight'})}`+roast(pick(ROAST.bw,ch==null?0:ch)):`<p class="mu">No weigh-ins yet. Suspicious.</p>`);
+ // money: under/over only
+ const W=(GD.weeks||[]).slice(0,10).reverse();
+ const money=card('Budget',`<div class="gbig"><b>${GD.bstreak||0}</b><span>weeks in a row under budget</span></div><div class="gwk">${W.map(w=>`<div class="${w.under?'ok':'bad'}${w.now?' now':''}"><b>${w.under?'✓':'✗'}</b><span>${MON[+w.ws.slice(5,7)-1]} ${+w.ws.slice(8)}${w.now?' (so far)':''}</span></div>`).join('')}</div><p class="mu" style="font-size:13px">Just under or over. You don't get to see the numbers. Nice try.</p>`+roast(pick(ROAST.money,GD.bstreak||(W.length&&W[W.length-1].under?1:0))));
+ $('app').innerHTML=head+`<div class="ggrid">${cons}${work}${sleep}${pace}${body}${money}</div>`+gFoot()}
+const roast=t=>`<p class="roast">“${esc(t)}”<span>— me</span></p>`;
+const gFoot=()=>`<footer class="gft">${GD&&GD.at?'Updated '+new Date(GD.at).toLocaleString(undefined,{weekday:'short',hour:'numeric',minute:'2-digit'})+' · ':''}<a onclick="iAmJosh()">This is my app. Sign in</a></footer>`;
+
 /* ---------- boot ---------- */
 defaults();fmig();
-render();
+if(isGuest()){guestV();guestLoad()}else render();
 setInterval(()=>{const n=iso(new Date());const th=document.documentElement.dataset.theme,want=(S.theme==='night'||(S.theme==='auto'&&(new Date().getHours()>=20||new Date().getHours()<5)))?'night':'day';if((n!==today||th!==want)&&!/INPUT|SELECT|TEXTAREA/.test((document.activeElement||{}).tagName||''))render()},60000);
 document.addEventListener('focusout',()=>setTimeout(()=>{if(!/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName||'')){const y=scrollY;scrollTo(0,y+1);scrollTo(0,y)}},150));
 (AU?sync():Promise.resolve()).then(()=>save());if(AU)bankSync(true);
