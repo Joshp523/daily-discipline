@@ -21,6 +21,20 @@
 
 **Always current.** The board refreshes itself every time I sync.
 
+## ✦ New: Reminders that don't take no for an answer
+<table><tr>
+<td align="center"><img src="readme-nags.jpg" width="260"><br><sub><b>Each nag ruder than the last</b></sub></td>
+<td align="center"><img src="readme-reminders.jpg" width="300"><br><sub><b>You pick the hours</b></sub></td>
+</tr></table>
+
+**It knows what's missing.** Rise, Body, Money, Spirit. Whatever's still open gets named, right on the lock screen.
+
+**It escalates.** The first nudge is polite. By ten o'clock, it isn't.
+
+**It goes quiet when you've earned it.** Keep all four and the reminders stop for the day.
+
+**A badge that won't let go.** The home-screen icon shows how many are still open.
+
 ## ✦ The whole discipline, on one screen
 - **Rise.** A wake-up target that glides earlier week by week, and sleep tracked from lights-out.
 - **Train.** Three full-body days and easy runs, with smart weight suggestions and a stopwatch built in.

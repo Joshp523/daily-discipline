@@ -48,6 +48,9 @@ sw.js                    offline cache
 manifest.webmanifest     install metadata
 hero-*.jpg               page background images
 plaid-function.ts        Supabase Edge Function (bank sync and balances)
+dd-remind.ts             Supabase Edge Function (hourly push reminders)
+dd_reminders.sql         reminder table and the hourly cron job
+make-vapid-keys.html     makes the key pair push notifications need
 supabase-setup.sql       tables for the bank integration
 ```
 
@@ -56,6 +59,8 @@ supabase-setup.sql       tables for the bank integration
 1. Serve the folder over HTTPS (GitHub Pages works) and open `index.html`.
 2. On iPhone: Safari, Share, **Add to Home Screen**.
 3. Optional sync and bank features: create a Supabase project, run `supabase-setup.sql`, deploy `plaid-function.ts` as an Edge Function named `plaid`, and add `PLAID_CLIENT_ID`, `PLAID_SECRET`, `PLAID_ENV` and `OWNER_USER_ID` as function secrets.
+
+4. Optional reminders: run `dd_reminders.sql`, deploy `dd-remind.ts` as an Edge Function named `dd-remind` with **Verify JWT off**, and add `VAPID_SUBJECT` (`mailto:you@example.com`), `VAPID_PUBLIC` and `VAPID_PRIVATE` as function secrets (make the pair with `make-vapid-keys.html`). Then in the app: Settings › Reminders › Turn on. Status for the nags comes from the accountability board row in `dd_public`.
 
 ## Security notes
 
