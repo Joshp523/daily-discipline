@@ -592,23 +592,23 @@ const hLbl=h=>(h%12||12)+(h<12?'a':'p');
 const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
 async function remFn(body){const r=await fetch(SB+'/functions/v1/dd-remind',{method:'POST',headers:{'Content-Type':'application/json',apikey:KEY},body:JSON.stringify(body)});if(!r.ok)throw new Error('Reminder service not set up yet (HTTP '+r.status+')');return r.json()}
 async function remCheck(){try{if(!('serviceWorker' in navigator)||!('PushManager' in window)){REM.why=standalone()?'This phone can’t do notifications.':'On iPhone: Share › Add to Home Screen, then open the app from there to turn reminders on.';return}
- const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();REM.on=!!sub&&Notification.permission==='granted';REM.ep=sub?sub.endpoint:'';if(REM.on&&AU&&!S.remSaved)remSave()}catch(e){}}
-async function remSave(){try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(!sub)return;
- await sb('dd_push_subs?on_conflict=endpoint',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({endpoint:sub.endpoint,sub:sub.toJSON(),tz:Intl.DateTimeFormat().resolvedOptions().timeZone,hours:S.remH||REMD,updated_at:new Date().toISOString()})});S.remSaved=1;persist()}catch(e){toast('Reminders not saved: '+e.message.slice(0,90))}}
+ const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();REM.on=!!sub&&Notification.permission==='granted';REM.ep=sub?sub.endpoint:'';if(REM.on&&AU)remSave(true)}catch(e){}}
+async function remSave(quiet){try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(!sub)throw new Error('this phone has no push address yet. Tap Turn off, then Turn on reminders.');REM.ep=sub.endpoint;
+ await sb('dd_push_subs?on_conflict=endpoint',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify({endpoint:sub.endpoint,sub:sub.toJSON(),tz:Intl.DateTimeFormat().resolvedOptions().timeZone,hours:S.remH||REMD,updated_at:new Date().toISOString()})});S.remSaved=1;persist();return true}catch(e){REM.err='Not registered: '+e.message.slice(0,160);if(!quiet)toast(REM.err);return false}}
 async function remOn(){if(!AU)return toast('Sign in first');const b=$('remgo');if(b){b.disabled=true;b.textContent='One moment…'}
  try{if(Notification.permission!=='granted'&&await Notification.requestPermission()!=='granted')throw new Error('Notifications are blocked. Allow them in iPhone Settings › Notifications › Daily Discipline.');
   const {key}=await remFn({key:1});if(!key)throw new Error('Reminder service has no VAPID key yet');
   const u=key.replace(/-/g,'+').replace(/_/g,'/'),raw=atob(u+'='.repeat((4-u.length%4)%4)),reg=await navigator.serviceWorker.ready;
   const sub=await reg.pushManager.getSubscription()||await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:Uint8Array.from(raw,c=>c.charCodeAt(0))});
-  REM.on=true;REM.ep=sub.endpoint;S.remSaved=0;await remSave();toast('Reminders on ★')}catch(e){toast(e.message.slice(0,120))}render()}
+  REM.on=true;REM.ep=sub.endpoint;S.remSaved=0;if(!await remSave(true))throw new Error(REM.err);REM.err='';toast('Reminders on ★')}catch(e){toast(e.message.slice(0,120))}render()}
 async function remOff(){try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub){await sb('dd_push_subs?endpoint=eq.'+encodeURIComponent(sub.endpoint),{method:'DELETE',headers:{Prefer:'return=representation'}}).catch(()=>{});await sub.unsubscribe()}}catch(e){}REM.on=false;S.remSaved=0;persist();toast('Reminders off. Coward.');render()}
 function remHour(h){const a=new Set(S.remH||REMD);a.has(h)?a.delete(h):a.add(h);S.remH=[...a].sort((x,y)=>x-y);S.remSaved=0;save();render();if(REM.on)remSave()}
-async function remTest(){try{const j=await remFn({test:REM.ep});toast(j.ok?'Test sent. Check your lock screen.':'Test failed: '+(j.why||'unknown'))}catch(e){toast(e.message)}}
+async function remTest(){const t=$('remst');const say=m=>{if(t)t.textContent=m;toast(m.slice(0,120))};say('Registering this phone…');if(!await remSave())return say(REM.err);try{const j=await remFn({test:REM.ep});say(j.ok?'Test sent. Check your lock screen.':'Test failed: '+(j.why||'unknown'))}catch(e){say(e.message)}}
 function remCard(){const H=new Set(S.remH||REMD);
  const body=!AU?`<div class="mu">Sign in above, then turn on reminders.</div>`:REM.why?`<div class="mu">${esc(REM.why)}</div>`:
   REM.on?`<div class="mu" style="margin-bottom:8px">On. At each time below, if anything is still open today, this phone gets a nag. Each one is ruder than the last.</div>
    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px">${REMH.map(h=>`<button class="chip sm${H.has(h)?' on':''}" aria-pressed="${H.has(h)}" onclick="remHour(${h})">${hLbl(h)}</button>`).join('')}</div>
-   <div class="f2"><button class="go" onclick="remTest()">Send a test</button><button class="go" onclick="remOff()">Turn off</button></div>`:
+   <div id="remst" class="mu" style="font-size:13px;margin-bottom:8px">${esc(REM.err||'')}</div><div class="f2"><button class="go" onclick="remTest()">Send a test</button><button class="go" onclick="remOff()">Turn off</button></div>`:
   `<div class="mu" style="margin-bottom:8px">Nags at the times you pick until Rise, Body, Money and Spirit are all kept. Silent once they are.</div><button id="remgo" class="go ac w" onclick="remOn()">Turn on reminders</button>`;
  return card('Reminders',body)}
 // app badge on the home-screen icon: number of pillars still open today
